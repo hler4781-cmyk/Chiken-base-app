@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chicken Base - Order Now</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&family=Fredoka+One&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green: #1a8a2e;
+    --dark-green: #0f5c1e;
+    --light-green: #27ae60;
+    --yellow: #f9e902;
+    --red: #e8001c;
+    --white: #fff;
+    --card-bg: #fff;
+    --text: #111;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Nunito', sans-serif; background: var(--green); color: var(--text); min-height: 100vh; }
+
+  /* HEADER */
+  .header {
+    background: var(--dark-green);
+    padding: 12px 16px;
+    display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 100;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.4);
+  }
+  .header-logo { display: flex; align-items: center; gap: 10px; }
+  .header-logo img { width: 44px; height: 44px; border-radius: 50%; background: var(--yellow); }
+  .logo-text { font-family: 'Fredoka One', cursive; color: var(--yellow); font-size: 22px; line-height: 1; }
+  .logo-sub { color: #cfc; font-size: 11px; font-weight: 700; }
+  .header-right { display: flex; gap: 10px; align-items: center; }
+  .cart-btn {
+    background: var(--yellow); color: #111; border: none; border-radius: 50px;
+    padding: 8px 18px; font-weight: 900; font-size: 14px; cursor: pointer;
+    display: flex; align-items: center; gap: 6px; position: relative;
+  }
+  .cart-count {
+    background: var(--red); color: #fff; border-radius: 50%;
+    width: 20px; height: 20px; display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 900;
+  }
+
+  /* HERO BANNER */
+  .hero {
+    background: linear-gradient(135deg, var(--dark-green) 0%, var(--green) 60%, #1db954 100%);
+    padding: 20px 16px 16px;
+    text-align: center;
+    border-bottom: 4px solid var(--yellow);
+  }
+  .hero h1 { font-family: 'Fredoka One', cursive; font-size: 28px; color: var(--yellow); text-shadow: 2px 2px 0 #000; }
+  .hero p { color: #cfc; font-size: 13px; margin-top: 4px; }
+  .info-row {
+    display: flex; justify-content: center; gap: 16px; margin-top: 12px; flex-wrap: wrap;
+  }
+  .info-chip {
+    background: rgba(0,0,0,0.3); border-radius: 20px; padding: 5px 14px;
+    color: #fff; font-size: 12px; font-weight: 700; display: flex; align-items: center; gap: 5px;
+  }
+  .info-chip span { font-size: 16px; }
+
+  /* LOCATION BAR */
+  .location-bar {
+    background: var(--yellow); padding: 10px 16px;
+    display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  }
+  .loc-text { font-size: 12px; font-weight: 800; color: #111; display: flex; align-items: center; gap: 6px; flex: 1; }
+  .loc-btn {
+    background: var(--green); color: #fff; border: none; border-radius: 20px;
+    padding: 6px 14px; font-size: 12px; font-weight: 800; cursor: pointer;
+  }
+  .wa-share-btn {
+    background: #25D366; color: #fff; border: none; border-radius: 20px;
+    padding: 6px 14px; font-size: 12px; font-weight: 800; cursor: pointer;
+    display: flex; align-items: center; gap: 5px;
+  }
+
+  /* CATEGORIES */
+  .categories {
+    display: flex; gap: 10px; padding: 14px 16px; overflow-x: auto;
+    scrollbar-width: none; background: var(--dark-green);
+  }
+  .categories::-webkit-scrollbar { display: none; }
+  .cat-btn {
+    background: rgba(255,255,255,0.1); color: #fff; border: 2px solid rgba(255,255,255,0.2);
+    border-radius: 50px; padding: 7px 18px; font-size: 13px; font-weight: 800;
+    white-space: nowrap; cursor: pointer; transition: all 0.2s;
+    font-family: 'Nunito', sans-serif;
+  }
+  .cat-btn.active, .cat-btn:hover {
+    background: var(--yellow); color: #111; border-color: var(--yellow);
+  }
+
+  /* MENU SECTION */
+  .menu-section { padding: 12px 16px; }
+  .section-title {
+    font-family: 'Fredoka One', cursive; font-size: 22px; color: var(--yellow);
+    text-shadow: 1px 1px 0 #000; margin-bottom: 12px; display: flex; align-items: center; gap-8px;
+    border-left: 5px solid var(--yellow); padding-left: 10px;
+  }
+
+  /* ITEM CARDS */
+  .items-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .item-card {
+    background: #fff; border-radius: 16px; overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2); transition: transform 0.2s;
+    position: relative;
+  }
+  .item-card:active { transform: scale(0.97); }
+  .item-img {
+    width: 100%; height: 110px; object-fit: cover; background: #e8f5e9;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 40px;
+  }
+  .item-body { padding: 10px; }
+  .item-name { font-weight: 900; font-size: 13px; color: #111; line-height: 1.2; }
+  .item-desc { font-size: 11px; color: #666; margin-top: 2px; }
+  .item-price { font-family: 'Fredoka One', cursive; color: var(--red); font-size: 16px; margin-top: 4px; }
+  .add-btn {
+    background: var(--green); color: #fff; border: none; border-radius: 8px;
+    padding: 6px 0; font-weight: 900; font-size: 13px; cursor: pointer;
+    width: 100%; margin-top: 8px;
+  }
+  .qty-control {
+    display: flex; align-items: center; justify-content: space-between;
+    background: var(--green); border-radius: 8px; overflow: hidden; margin-top: 8px;
+  }
+  .qty-btn {
+    background: none; border: none; color: #fff; font-size: 18px; font-weight: 900;
+    padding: 5px 12px; cursor: pointer;
+  }
+  .qty-num { color: #fff; font-weight: 900; font-size: 14px; }
+
+  /* WIDE CARD (for platters) */
+  .items-list { display: flex; flex-direction: column; gap: 10px; }
+  .item-card-wide {
+    background: #fff; border-radius: 16px; overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    display: flex; align-items: stretch;
+  }
+  .item-card-wide .item-img { width: 100px; height: 100px; flex-shrink: 0; border-radius: 0; }
+  .item-card-wide .item-body { flex: 1; padding: 10px 12px; }
+  .item-card-wide .add-btn { width: auto; padding: 6px 16px; }
+  .item-card-wide .qty-control { width: auto; }
+
+  /* CART MODAL */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 200;
+    justify-content: flex-end; flex-direction: column;
+  }
+  .modal-overlay.open { display: flex; }
+  .cart-modal {
+    background: #fff; border-radius: 24px 24px 0 0; padding: 20px 16px 30px;
+    max-height: 80vh; overflow-y: auto;
+  }
+  .cart-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+  .cart-title { font-family: 'Fredoka One', cursive; font-size: 22px; color: var(--dark-green); }
+  .close-btn { background: #eee; border: none; border-radius: 50%; width: 32px; height: 32px; font-size: 18px; cursor: pointer; }
+  .cart-item { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid #eee; }
+  .cart-item-name { flex: 1; font-weight: 800; font-size: 14px; }
+  .cart-item-price { font-family: 'Fredoka One', cursive; color: var(--red); font-size: 15px; }
+  .cart-empty { text-align: center; color: #999; padding: 40px 0; font-size: 15px; }
+
+  /* ORDER FORM */
+  .order-form { margin-top: 16px; }
+  .form-label { font-weight: 800; font-size: 13px; color: #333; margin-bottom: 4px; display: block; }
+  .form-input {
+    width: 100%; border: 2px solid #ddd; border-radius: 10px; padding: 10px 12px;
+    font-size: 14px; font-family: 'Nunito', sans-serif; outline: none; margin-bottom: 12px;
+  }
+  .form-input:focus { border-color: var(--green); }
+  .total-row { display: flex; justify-content: space-between; font-size: 15px; font-weight: 800; margin: 12px 0; }
+  .total-price { font-family: 'Fredoka One', cursive; color: var(--red); font-size: 20px; }
+  .wa-order-btn {
+    background: #25D366; color: #fff; border: none; border-radius: 50px;
+    padding: 14px; font-size: 16px; font-weight: 900; cursor: pointer;
+    width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px;
+    font-family: 'Nunito', sans-serif;
+  }
+  .delivery-info {
+    background: #e8f5e9; border-radius: 12px; padding: 12px;
+    display: flex; align-items: center; gap: 10px; margin-bottom: 12px;
+  }
+  .delivery-info span { font-size: 13px; font-weight: 700; color: var(--dark-green); }
+
+  /* FLOATING WA BTN */
+  .wa-float {
+    position: fixed; bottom: 80px; right: 16px; z-index: 150;
+    background: #25D366; color: #fff; border: none; border-radius: 50px;
+    padding: 12px 18px; font-size: 14px; font-weight: 900; cursor: pointer;
+    box-shadow: 0 4px 16px rgba(37,211,102,0.5);
+    display: flex; align-items: center; gap: 8px;
+    font-family: 'Nunito', sans-serif;
+  }
+  .cart-float {
+    position: fixed; bottom: 16px; left: 16px; right: 16px; z-index: 150;
+    background: var(--dark-green); color: #fff; border: none; border-radius: 16px;
+    padding: 14px 20px; font-size: 15px; font-weight: 900; cursor: pointer;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    display: none; align-items: center; justify-content: space-between;
+    font-family: 'Nunito', sans-serif;
+  }
+  .cart-float.visible { display: flex; }
+  .cart-float-right { display: flex; align-items: center; gap: 10px; }
+  .cf-price { font-family: 'Fredoka One', cursive; color: var(--yellow); font-size: 18px; }
+
+  /* HIDDEN */
+  .category-section { display: none; }
+  .category-section.active { display: block; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-logo">
+    <div style="width:44px;height:44px;background:var(--yellow);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;">🍗</div>
+    <div>
+      <div class="logo-text">Chicken Base</div>
+      <div class="logo-sub">UK's Brand • 24hr Service</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <button class="cart-btn" onclick="openCart()">
+      🛒 Cart <div class="cart-count" id="cartCount">0</div>
+    </button>
+  </div>
+</div>
+
+<!-- LOCATION BAR -->
+<div class="location-bar">
+  <div class="loc-text">
+    📍 <span id="locText">Commercial Market, Rawalpindi</span>
+  </div>
+  <button class="loc-btn" onclick="shareLocation()">📡 Live Loc</button>
+  <button class="wa-share-btn" onclick="openWhatsApp()">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+    WhatsApp
+  </button>
+</div>
+
+<!-- HERO -->
+<div class="hero">
+  <h1>🍗 Order Karo, Maza Lo!</h1>
+  <p>Fresh • Hot • Delivered to Your Door</p>
+  <div class="info-row">
+    <div class="info-chip"><span>⏱️</span> 30–40 Min Delivery</div>
+    <div class="info-chip"><span>📞</span> 0317-5444999</div>
+    <div class="info-chip"><span>🕐</span> 24/7 Open</div>
+  </div>
+</div>
+
+<!-- CATEGORIES -->
+<div class="categories" id="catBar">
+  <button class="cat-btn active" onclick="showCat('burgers',this)">🍔 Burgers</button>
+  <button class="cat-btn" onclick="showCat('starters',this)">🍗 Starters</button>
+  <button class="cat-btn" onclick="showCat('pizza',this)">🍕 Pizza</button>
+  <button class="cat-btn" onclick="showCat('platters',this)">🍱 Platters</button>
+  <button class="cat-btn" onclick="showCat('wraps',this)">🌯 Wraps & Rolls</button>
+  <button class="cat-btn" onclick="showCat('pasta',this)">🍝 Pasta</button>
+  <button class="cat-btn" onclick="showCat('kids',this)">👶 Kids Meal</button>
+  <button class="cat-btn" onclick="showCat('drinks',this)">🥤 Drinks</button>
+</div>
+
+<!-- MENU CONTENT -->
+<div class="menu-section">
+
+  <!-- BURGERS -->
+  <div class="category-section active" id="cat-burgers">
+    <div class="section-title">🍔 Burgers</div>
+    <div style="background:rgba(255,255,255,0.1);border-radius:10px;padding:8px 12px;margin-bottom:12px;color:#fff;font-size:12px;font-weight:700;">➕ Meal add karne ke liye Rs. 199 extra</div>
+    <div class="items-grid" id="grid-burgers"></div>
+  </div>
+
+  <!-- STARTERS -->
+  <div class="category-section" id="cat-starters">
+    <div class="section-title">🍗 Starters</div>
+    <div class="items-grid" id="grid-starters"></div>
+  </div>
+
+  <!-- PIZZA -->
+  <div class="category-section" id="cat-pizza">
+    <div class="section-title">🍕 Pizza</div>
+    <div class="items-list" id="grid-pizza"></div>
+  </div>
+
+  <!-- PLATTERS -->
+  <div class="category-section" id="cat-platters">
+    <div class="section-title">🍱 Platters</div>
+    <div class="items-list" id="grid-platters"></div>
+  </div>
+
+  <!-- WRAPS -->
+  <div class="category-section" id="cat-wraps">
+    <div class="section-title">🌯 Wraps & Rolls</div>
+    <div class="items-grid" id="grid-wraps"></div>
+  </div>
+
+  <!-- PASTA -->
+  <div class="category-section" id="cat-pasta">
+    <div class="section-title">🍝 Pasta</div>
+    <div class="items-grid" id="grid-pasta"></div>
+  </div>
+
+  <!-- KIDS MEAL -->
+  <div class="category-section" id="cat-kids">
+    <div class="section-title">👶 Kids Meal</div>
+    <div class="items-list" id="grid-kids"></div>
+  </div>
+
+  <!-- DRINKS -->
+  <div class="category-section" id="cat-drinks">
+    <div class="section-title">🥤 Drinks</div>
+    <div class="items-grid" id="grid-drinks"></div>
+  </div>
+
+</div>
+
+<!-- FLOATING WA BUTTON -->
+<button class="wa-float" onclick="openWhatsApp()">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+  Chat on WhatsApp
+</button>
+
+<!-- FLOATING CART BAR -->
+<div class="cart-float" id="cartFloat" onclick="openCart()">
+  <span>🛒 View Cart (<span id="cartFloatCount">0</span> items)</span>
+  <div class="cart-float-right">
+    <span class="cf-price" id="cartFloatTotal">Rs. 0</span>
+    <span style="background:var(--yellow);color:#111;padding:4px 12px;border-radius:20px;font-size:13px;">Order</span>
+  </div>
+</div>
+
+<!-- CART MODAL -->
+<div class="modal-overlay" id="cartOverlay">
+  <div class="cart-modal">
+    <div class="cart-header">
+      <div class="cart-title">🛒 Your Order</div>
+      <button class="close-btn" onclick="closeCart()">✕</button>
+    </div>
+
+    <div class="delivery-info">
+      <span>⏱️ Estimated Delivery: <strong>30–40 Minutes</strong></span>
+    </div>
+
+    <div id="cartItems"><div class="cart-empty">Cart khali hai! Kuch add karo 😋</div></div>
+
+    <div class="total-row" id="totalRow" style="display:none">
+      <span>Total Amount:</span>
+      <span class="total-price" id="totalPrice">Rs. 0</span>
+    </div>
+
+    <div class="order-form" id="orderForm" style="display:none">
+      <label class="form-label">📛 Aapka Naam</label>
+      <input class="form-input" id="custName" type="text" placeholder="Naam likhein...">
+      <label class="form-label">📞 Phone Number</label>
+      <input class="form-input" id="custPhone" type="tel" placeholder="03xxxxxxxxx">
+      <label class="form-label">🏠 Delivery Address</label>
+      <textarea class="form-input" id="custAddr" rows="2" placeholder="Ghar ka pura address..."></textarea>
+      <div style="display:flex;gap:8px;margin-bottom:12px;">
+        <button class="loc-btn" style="flex:1;padding:10px;" onclick="addLiveLocation()">📡 Live Location Add Karein</button>
+      </div>
+      <div id="liveLocDisplay" style="display:none;background:#e8f5e9;border-radius:10px;padding:8px 12px;margin-bottom:12px;font-size:12px;font-weight:700;color:var(--dark-green);">
+        ✅ Live location attached!
+      </div>
+      <button class="wa-order-btn" onclick="sendWhatsAppOrder()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        WhatsApp Par Order Bhejein
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+const WA_NUMBER = '923189681939';
+let cart = {};
+let liveLocationUrl = null;
+
+const menuData = {
+  burgers: [
+    { id:'b1', name:'Crunch Burger', price:299, emoji:'🍔', desc:'Crispy chicken burger' },
+    { id:'b2', name:'Zinger Burger', price:499, emoji:'🍔', desc:'Classic zinger' },
+    { id:'b3', name:'Mighty Zinger', price:799, emoji:'🍔', desc:'Double patty zinger' },
+    { id:'b4', name:'Strip Burger', price:499, emoji:'🍔', desc:'Chicken strips burger' },
+    { id:'b5', name:'Sando Burger', price:499, emoji:'🍔', desc:'Sando style' },
+    { id:'b6', name:'Angry Burger', price:399, emoji:'🍔', desc:'Spicy angry burger' },
+    { id:'b7', name:'Chicken Burger', price:399, emoji:'🍔', desc:'Classic chicken burger' },
+    { id:'b8', name:'Tikka Burger', price:499, emoji:'🍔', desc:'Tikka flavored burger' },
+  ],
+  starters: [
+    { id:'s1', name:'5 Nuggets', price:349, emoji:'🍗', desc:'Chicken nuggets x5' },
+    { id:'s2', name:'10 Nuggets', price:649, emoji:'🍗', desc:'Chicken nuggets x10' },
+    { id:'s3', name:'15 Chicken Bites', price:499, emoji:'🍗', desc:'Crispy chicken bites' },
+    { id:'s4', name:'5 Chicken Strips', price:599, emoji:'🍗', desc:'Chicken strips x5' },
+    { id:'s5', name:'10 Chicken Strips', price:699, emoji:'🍗', desc:'Chicken strips x10' },
+    { id:'s6', name:'5 Wings', price:499, emoji:'🍗', desc:'Peri Peri/BBQ/Plain' },
+    { id:'s7', name:'10 Wings', price:899, emoji:'🍗', desc:'Peri Peri/BBQ/Plain' },
+    { id:'s8', name:'1 PC Fried Chicken', price:289, emoji:'🍗', desc:'Crispy fried chicken' },
+    { id:'s9', name:'3 PCS Fried Chicken', price:799, emoji:'🍗', desc:'Family pack' },
+    { id:'s10', name:'Cheese Stick', price:499, emoji:'🧀', desc:'Cheesy starter' },
+    { id:'s11', name:'Chicken Cheese Stick', price:599, emoji:'🧀', desc:'Chicken + cheese' },
+    { id:'s12', name:'Pizza Loaded Fries', price:699, emoji:'🍟', desc:'Loaded pizza fries' },
+    { id:'s13', name:'Donner Fries', price:499, emoji:'🍟', desc:'Donner topped fries' },
+    { id:'s14', name:'Cheesy Fries', price:499, emoji:'🍟', desc:'Extra cheesy fries' },
+    { id:'s15', name:'Masala Fries', price:249, emoji:'🍟', desc:'Spicy masala fries' },
+    { id:'s16', name:'Plain Fries', price:199, emoji:'🍟', desc:'Classic fries' },
+  ],
+  pizza: [
+    { id:'p1', name:'CB Signature Med', price:1599, emoji:'🍕', desc:'Queen Crust, Cheesy Bites, Spinach (Medium)' },
+    { id:'p2', name:'CB Signature Large', price:2199, emoji:'🍕', desc:'Queen Crust, Cheesy Bites, Spinach (Large)' },
+    { id:'p3', name:'CB Special Med', price:1499, emoji:'🍕', desc:'Crown Crust, Behari Kabab, Malai Boti (Med)' },
+    { id:'p4', name:'CB Special Large', price:2099, emoji:'🍕', desc:'Crown Crust, Behari Kabab, Malai Boti (Large)' },
+    { id:'p5', name:'Traditional Small', price:699, emoji:'🍕', desc:'Trendy Tikka/Fajita/Vege/Pepperoni etc (Small)' },
+    { id:'p6', name:'Traditional Medium', price:1299, emoji:'🍕', desc:'Your choice of topping (Medium)' },
+    { id:'p7', name:'Traditional Large', price:1799, emoji:'🍕', desc:'Your choice of topping (Large)' },
+    { id:'p8', name:'Pocket Pizza', price:499, emoji:'🍕', desc:'Mini pocket pizza' },
+    { id:'p9', name:'Meter King Pizza', price:3999, emoji:'🍕', desc:'1 meter pizza – Traditional flavours only' },
+  ],
+  platters: [
+    { id:'pl1', name:'Chicken Base Platter', price:1199, emoji:'🍱', desc:'4 Spin Rolls + 5 Wings + Fries + Dip' },
+    { id:'pl2', name:'Periperi Platter', price:1199, emoji:'🍱', desc:'Peri Wraps + 5 Peri Wings + Fries + Dip' },
+    { id:'pl3', name:'Kabab Platter', price:1199, emoji:'🍱', desc:'4 Spin Rolls + 4 Seekh Kabab + Fries + Dip' },
+    { id:'pl4', name:'Snack Box', price:1199, emoji:'📦', desc:'3 Strips + 5 Plain Wings + 5 Bites + Reg Fries' },
+    { id:'pl5', name:'CB Sandwich Malai Boti', price:999, emoji:'🥙', desc:'Chicken Base Sandwich – Malai Boti' },
+    { id:'pl6', name:'CB Sandwich Mexican', price:999, emoji:'🥙', desc:'Chicken Base Sandwich – Mexican' },
+  ],
+  wraps: [
+    { id:'w1', name:'Zinger Wrap', price:499, emoji:'🌯', desc:'Crispy zinger in wrap' },
+    { id:'w2', name:'Peri Peri Wrap', price:599, emoji:'🌯', desc:'Spicy peri peri wrap' },
+    { id:'w3', name:'Afghani Wrap', price:599, emoji:'🌯', desc:'Afghani chicken wrap' },
+    { id:'w4', name:'4 Arabic Rolls + Dip', price:599, emoji:'🌯', desc:'Arabic style rolls' },
+    { id:'w5', name:'4 Spin Rolls + Dip', price:599, emoji:'🌯', desc:'Crispy spin rolls' },
+  ],
+  pasta: [
+    { id:'pa1', name:'Alfredo Pasta (Small)', price:599, emoji:'🍝', desc:'Creamy alfredo sauce' },
+    { id:'pa2', name:'Alfredo Pasta (Large)', price:999, emoji:'🍝', desc:'Large creamy alfredo' },
+    { id:'pa3', name:'Crunchy Pasta (Small)', price:599, emoji:'🍝', desc:'Crunchy pasta mix' },
+    { id:'pa4', name:'Crunchy Pasta (Large)', price:999, emoji:'🍝', desc:'Large crunchy pasta' },
+    { id:'pa5', name:'Chicken Pasta (Small)', price:599, emoji:'🍝', desc:'Chicken pasta' },
+    { id:'pa6', name:'Chicken Pasta (Large)', price:999, emoji:'🍝', desc:'Large chicken pasta' },
+  ],
+  kids: [
+    { id:'k1', name:'Kids Meal 1', price:599, emoji:'🧒', desc:'1 Chicken Burger + Fries + Cold Drink' },
+    { id:'k2', name:'Kids Meal 2', price:599, emoji:'🧒', desc:'5 PC Nuggets + Fries + Cold Drink' },
+    { id:'k3', name:'Kids Meal 3', price:599, emoji:'🧒', desc:'1 Chicken PC + Fries + Cold Drink' },
+  ],
+  drinks: [
+    { id:'d1', name:'Cold Drink (Small)', price:90, emoji:'🥤', desc:'Regular cold drink' },
+    { id:'d2', name:'Cold Drink Half Litre', price:150, emoji:'🥤', desc:'500ml drink' },
+    { id:'d3', name:'Cold Drink 1 Litre', price:199, emoji:'🥤', desc:'1 litre drink' },
+    { id:'d4', name:'Cold Drink 1.5 Litre', price:250, emoji:'🥤', desc:'1.5 litre drink' },
+    { id:'d5', name:'Water Small', price:60, emoji:'💧', desc:'Small water bottle' },
+    { id:'d6', name:'Water Large', price:150, emoji:'💧', desc:'Large water bottle' },
+  ]
+};
+
+function renderGrid(containerId, items, wide=false) {
+  const container = document.getElementById(containerId);
+  if(!container) return;
+  container.innerHTML = '';
+  items.forEach(item => {
+    if(wide) {
+      container.innerHTML += `
+        <div class="item-card-wide">
+          <div class="item-img">${item.emoji}</div>
+          <div class="item-body">
+            <div class="item-name">${item.name}</div>
+            <div class="item-desc">${item.desc}</div>
+            <div class="item-price">Rs. ${item.price}</div>
+            <div id="ctrl-${item.id}">
+              <button class="add-btn" onclick="addItem('${item.id}')">+ Add</button>
+            </div>
+          </div>
+        </div>`;
+    } else {
+      container.innerHTML += `
+        <div class="item-card">
+          <div class="item-img">${item.emoji}</div>
+          <div class="item-body">
+            <div class="item-name">${item.name}</div>
+            <div class="item-desc">${item.desc}</div>
+            <div class="item-price">Rs. ${item.price}</div>
+            <div id="ctrl-${item.id}">
+              <button class="add-btn" onclick="addItem('${item.id}')">+ Add</button>
+            </div>
+          </div>
+        </div>`;
+    }
+  });
+}
+
+function findItem(id) {
+  for(const cat of Object.values(menuData)) {
+    const found = cat.find(i => i.id === id);
+    if(found) return found;
+  }
+  return null;
+}
+
+function addItem(id) {
+  const item = findItem(id);
+  if(!item) return;
+  if(!cart[id]) cart[id] = { ...item, qty: 0 };
+  cart[id].qty++;
+  updateCtrl(id);
+  updateCartUI();
+}
+
+function removeItem(id) {
+  if(!cart[id]) return;
+  cart[id].qty--;
+  if(cart[id].qty <= 0) delete cart[id];
+  updateCtrl(id);
+  updateCartUI();
+}
+
+function updateCtrl(id) {
+  const ctrl = document.getElementById('ctrl-' + id);
+  if(!ctrl) return;
+  const qty = cart[id] ? cart[id].qty : 0;
+  if(qty === 0) {
+    ctrl.innerHTML = `<button class="add-btn" onclick="addItem('${id}')">+ Add</button>`;
+  } else {
+    ctrl.innerHTML = `
+      <div class="qty-control">
+        <button class="qty-btn" onclick="removeItem('${id}')">−</button>
+        <span class="qty-num">${qty}</span>
+        <button class="qty-btn" onclick="addItem('${id}')">+</button>
+      </div>`;
+  }
+}
+
+function updateCartUI() {
+  const items = Object.values(cart);
+  const total = items.reduce((s,i) => s + i.price * i.qty, 0);
+  const count = items.reduce((s,i) => s + i.qty, 0);
+
+  document.getElementById('cartCount').textContent = count;
+  document.getElementById('cartFloatCount').textContent = count;
+  document.getElementById('cartFloatTotal').textContent = 'Rs. ' + total;
+
+  const cartFloat = document.getElementById('cartFloat');
+  if(count > 0) cartFloat.classList.add('visible');
+  else cartFloat.classList.remove('visible');
+
+  // Re-render cart modal if open
+  renderCartModal();
+}
+
+function renderCartModal() {
+  const items = Object.values(cart);
+  const cartDiv = document.getElementById('cartItems');
+  const totalRow = document.getElementById('totalRow');
+  const orderForm = document.getElementById('orderForm');
+  const totalPrice = document.getElementById('totalPrice');
+
+  if(items.length === 0) {
+    cartDiv.innerHTML = '<div class="cart-empty">Cart khali hai! Kuch add karo 😋</div>';
+    totalRow.style.display = 'none';
+    orderForm.style.display = 'none';
+    return;
+  }
+
+  let html = '';
+  let total = 0;
+  items.forEach(item => {
+    const sub = item.price * item.qty;
+    total += sub;
+    html += `
+      <div class="cart-item">
+        <span style="font-size:20px">${item.emoji}</span>
+        <div class="cart-item-name">${item.name}<br><span style="color:#999;font-size:11px">x${item.qty}</span></div>
+        <span class="cart-item-price">Rs. ${sub}</span>
+        <button onclick="removeItem('${item.id}')" style="background:#fee;border:none;border-radius:8px;padding:4px 10px;cursor:pointer;font-weight:900;color:#c00;">−</button>
+      </div>`;
+  });
+  cartDiv.innerHTML = html;
+  totalRow.style.display = 'flex';
+  orderForm.style.display = 'block';
+  totalPrice.textContent = 'Rs. ' + total;
+}
+
+function openCart() {
+  document.getElementById('cartOverlay').classList.add('open');
+  renderCartModal();
+}
+function closeCart() {
+  document.getElementById('cartOverlay').classList.remove('open');
+}
+
+function showCat(cat, btn) {
+  document.querySelectorAll('.category-section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('cat-' + cat).classList.add('active');
+  btn.classList.add('active');
+  btn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+}
+
+function shareLocation() {
+  if(navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(pos => {
+      const url = `https://maps.google.com/?q=${pos.coords.latitude},${pos.coords.longitude}`;
+      liveLocationUrl = url;
+      const msg = `📍 Meri live location: ${url}%0A%0AChicken Base par order karne ke liye share ki!`;
+      window.open(`https://wa.me/${WA_NUMBER}?text=${msg}`, '_blank');
+    }, () => alert('Location access denied. Please enable in browser settings.'));
+  } else {
+    alert('Aapka browser location support nahi karta.');
+  }
+}
+
+function addLiveLocation() {
+  if(navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(pos => {
+      liveLocationUrl = `https://maps.google.com/?q=${pos.coords.latitude},${pos.coords.longitude}`;
+      document.getElementById('liveLocDisplay').style.display = 'block';
+    }, () => alert('Location access denied.'));
+  }
+}
+
+function openWhatsApp() {
+  window.open(`https://wa.me/${WA_NUMBER}?text=Assalam%20o%20Alaikum%21%20Mujhe%20order%20karna%20hai%20%F0%9F%8D%97`, '_blank');
+}
+
+function sendWhatsAppOrder() {
+  const name = document.getElementById('custName').value.trim();
+  const phone = document.getElementById('custPhone').value.trim();
+  const addr = document.getElementById('custAddr').value.trim();
+  if(!name || !phone || !addr) { alert('Pura naam, phone aur address bharen!'); return; }
+
+  const items = Object.values(cart);
+  if(items.length === 0) { alert('Cart khali hai!'); return; }
+  const total = items.reduce((s,i) => s + i.price * i.qty, 0);
+
+  let orderText = `🍗 *CHICKEN BASE ORDER*\n━━━━━━━━━━━━━\n`;
+  orderText += `👤 *Naam:* ${name}\n📞 *Phone:* ${phone}\n🏠 *Address:* ${addr}\n`;
+  if(liveLocationUrl) orderText += `📍 *Live Location:* ${liveLocationUrl}\n`;
+  orderText += `━━━━━━━━━━━━━\n🛒 *Order Details:*\n`;
+  items.forEach(i => { orderText += `• ${i.name} x${i.qty} = Rs. ${i.price * i.qty}\n`; });
+  orderText += `━━━━━━━━━━━━━\n💰 *Total: Rs. ${total}*\n⏱️ Delivery: 30-40 min\n\nShukria! 🙏`;
+
+  const encoded = encodeURIComponent(orderText);
+  window.open(`https://wa.me/${WA_NUMBER}?text=${encoded}`, '_blank');
+}
+
+// Initialize
+renderGrid('grid-burgers', menuData.burgers);
+renderGrid('grid-starters', menuData.starters);
+renderGrid('grid-pizza', menuData.pizza, true);
+renderGrid('grid-platters', menuData.platters, true);
+renderGrid('grid-wraps', menuData.wraps);
+renderGrid('grid-pasta', menuData.pasta);
+renderGrid('grid-kids', menuData.kids, true);
+renderGrid('grid-drinks', menuData.drinks);
+
+document.getElementById('cartOverlay').addEventListener('click', function(e) {
+  if(e.target === this) closeCart();
+});
+</script>
+</body>
+</html>

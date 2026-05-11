@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Monaco Bay – Exquisite Dining</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400;1,600&family=Montserrat:wght@300;400;500;600;700&family=Great+Vibes&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+:root{
+  --navy:#080c20;
+  --navy2:#0d1230;
+  --navy3:#131840;
+  --gold:#c9a227;
+  --gold2:#e8c44a;
+  --gold3:#f7e6a0;
+  --white:#ffffff;
+  --muted:#6b7a99;
+  --card:#111535;
+}
+html{scroll-behavior:smooth;}
+body{background:var(--navy);color:var(--white);font-family:'Montserrat',sans-serif;min-height:100vh;overflow-x:hidden;}
+
+/* ===== HERO ===== */
+.hero{
+  background:linear-gradient(180deg,#060919 0%,#0a0e28 60%,var(--navy) 100%);
+  padding:48px 24px 36px;
+  text-align:center;
+  position:relative;
+  overflow:hidden;
+}
+.hero-glow{
+  position:absolute;top:-60px;left:50%;transform:translateX(-50%);
+  width:340px;height:340px;
+  background:radial-gradient(circle,rgba(201,162,39,0.18) 0%,transparent 70%);
+  pointer-events:none;
+}
+.hero-lines{
+  position:absolute;inset:0;
+  background:repeating-linear-gradient(0deg,transparent,transparent 39px,rgba(201,162,39,0.03) 40px);
+  pointer-events:none;
+}
+.logo-ring{
+  width:90px;height:90px;
+  background:linear-gradient(135deg,rgba(201,162,39,0.15),rgba(201,162,39,0.05));
+  border:1.5px solid rgba(201,162,39,0.4);
+  border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  margin:0 auto 18px;
+  box-shadow:0 0 40px rgba(201,162,39,0.2);
+  animation:pulse 3s ease-in-out infinite;
+}
+@keyframes pulse{0%,100%{box-shadow:0 0 40px rgba(201,162,39,0.2);}50%{box-shadow:0 0 60px rgba(201,162,39,0.35);}}
+.logo-hat{font-size:40px;filter:drop-shadow(0 2px 12px rgba(201,162,39,0.5));}
+.brand{
+  font-family:'Playfair Display',serif;
+  font-size:clamp(38px,10vw,58px);
+  font-weight:900;
+  letter-spacing:8px;
+  background:linear-gradient(160deg,#a07820 0%,#e8c44a 30%,#f7e6a0 50%,#c9a227 70%,#8a6010 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  line-height:1;
+}
+.brand-bay{
+  font-family:'Great Vibes',cursive;
+  font-size:clamp(26px,7vw,40px);
+  color:var(--gold2);
+  display:block;
+  margin-top:-6px;
+  letter-spacing:2px;
+}
+.hero-sep{
+  display:flex;align-items:center;gap:10px;
+  margin:14px auto;max-width:260px;
+}
+.sep-line{flex:1;height:1px;background:linear-gradient(90deg,transparent,rgba(201,162,39,0.5));}
+.sep-line.r{background:linear-gradient(90deg,rgba(201,162,39,0.5),transparent);}
+.sep-diamond{color:var(--gold);font-size:8px;}
+.tagline{
+  font-size:10px;letter-spacing:4px;color:var(--muted);text-transform:uppercase;margin-bottom:12px;
+}
+.pills{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:14px;}
+.pill{
+  font-size:9px;letter-spacing:2px;text-transform:uppercase;
+  color:var(--gold);border:1px solid rgba(201,162,39,0.35);
+  padding:5px 14px;border-radius:20px;
+  background:rgba(201,162,39,0.06);
+}
+.address{
+  font-size:12px;color:var(--gold3);
+  background:rgba(201,162,39,0.08);
+  border:1px solid rgba(201,162,39,0.2);
+  border-radius:8px;padding:8px 16px;
+  display:inline-block;letter-spacing:0.5px;
+}
+
+/* ===== PROMO ===== */
+.promo{
+  margin:20px 16px 0;
+  background:linear-gradient(135deg,rgba(201,162,39,0.18),rgba(201,162,39,0.06));
+  border:1px solid rgba(201,162,39,0.35);
+  border-radius:14px;padding:14px 20px;text-align:center;
+}
+.promo-title{font-family:'Playfair Display',serif;font-size:16px;color:var(--gold2);font-weight:700;}
+.promo-sub{font-size:11px;color:var(--muted);margin-top:4px;letter-spacing:0.5px;}
+
+/* ===== TABS ===== */
+.tabs-label{
+  font-size:9px;letter-spacing:4px;text-transform:uppercase;
+  color:var(--gold);text-align:center;margin:24px 0 12px;
+}
+.tabs-scroll{overflow-x:auto;padding:0 16px 4px;scrollbar-width:none;}
+.tabs-scroll::-webkit-scrollbar{display:none;}
+.tabs-row{display:flex;gap:8px;width:max-content;}
+.tab-btn{
+  font-family:'Montserrat',sans-serif;
+  font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;
+  color:var(--muted);
+  background:rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:24px;padding:8px 18px;
+  cursor:pointer;white-space:nowrap;
+  transition:all 0.25s;
+  -webkit-user-select:none;user-select:none;
+}
+.tab-btn.on{
+  color:var(--navy);font-weight:700;
+  background:linear-gradient(135deg,var(--gold),var(--gold2));
+  border-color:var(--gold);
+  box-shadow:0 4px 16px rgba(201,162,39,0.35);
+}
+
+/* ===== SECTIONS ===== */
+.section{display:none;padding:16px 16px 100px;animation:fadeup 0.35s ease;}
+.section.on{display:block;}
+@keyframes fadeup{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
+
+.cat-title{
+  font-family:'Playfair Display',serif;
+  font-size:20px;font-weight:700;letter-spacing:2px;
+  color:var(--gold);
+  padding:14px 0 10px;
+  border-bottom:1px solid rgba(201,162,39,0.2);
+  margin-bottom:14px;
+  display:flex;align-items:center;gap:10px;
+}
+.note{
+  font-size:10px;color:var(--gold);letter-spacing:0.5px;
+  background:rgba(201,162,39,0.08);
+  border-left:2px solid var(--gold);
+  padding:7px 12px;border-radius:0 6px 6px 0;
+  margin-bottom:14px;
+}
+
+/* ===== ITEM CARD ===== */
+.card{
+  background:var(--card);
+  border:1px solid rgba(201,162,39,0.1);
+  border-radius:16px;
+  padding:16px;
+  margin-bottom:10px;
+  display:flex;align-items:center;gap:14px;
+  transition:all 0.2s;
+  position:relative;overflow:hidden;
+}
+.card::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(201,162,39,0.05),transparent);
+  opacity:0;transition:opacity 0.2s;pointer-events:none;
+}
+.card:active{transform:scale(0.98);border-color:rgba(201,162,39,0.3);}
+.card:active::after{opacity:1;}
+
+.card-icon{font-size:38px;min-width:50px;text-align:center;line-height:1;}
+.card-body{flex:1;min-width:0;}
+.card-name{
+  font-family:'Playfair Display',serif;
+  font-size:16px;font-weight:600;
+  color:var(--white);margin-bottom:3px;line-height:1.25;
+}
+.card-desc{font-size:11px;color:var(--muted);line-height:1.45;}
+.card-right{display:flex;flex-direction:column;align-items:flex-end;gap:8px;min-width:70px;}
+.card-price{
+  font-family:'Playfair Display',serif;
+  font-size:16px;font-weight:700;color:var(--gold2);white-space:nowrap;
+}
+.card-price-note{font-size:9px;color:var(--muted);letter-spacing:0.5px;text-align:right;}
+
+/* ===== ADD BUTTON ===== */
+.add{
+  width:34px;height:34px;min-width:34px;
+  background:linear-gradient(135deg,var(--gold),var(--gold2));
+  border:none;border-radius:50%;
+  color:var(--navy);font-size:22px;font-weight:700;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;
+  box-shadow:0 4px 12px rgba(201,162,39,0.3);
+  transition:all 0.15s;
+  -webkit-user-select:none;user-select:none;
+  line-height:1;
+}
+.add:active{transform:scale(0.88);box-shadow:0 2px 6px rgba(201,162,39,0.5);}
+
+/* ===== CART FAB ===== */
+.fab{
+  position:fixed;bottom:24px;right:16px;left:16px;
+  background:linear-gradient(135deg,var(--gold) 0%,var(--gold2) 100%);
+  color:var(--navy);border:none;border-radius:50px;
+  padding:16px 24px;
+  font-family:'Montserrat',sans-serif;
+  font-size:13px;font-weight:700;letter-spacing:1px;
+  cursor:pointer;
+  box-shadow:0 8px 32px rgba(201,162,39,0.5);
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  z-index:90;
+  transition:all 0.2s;
+  -webkit-user-select:none;user-select:none;
+}
+.fab:active{transform:scale(0.97);}
+.fab-badge{
+  background:var(--navy);color:var(--gold);
+  border-radius:50%;width:26px;height:26px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:700;
+}
+
+/* ===== DRAWER ===== */
+.overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,0.75);
+  z-index:100;display:none;backdrop-filter:blur(6px);
+}
+.overlay.on{display:block;}
+.drawer{
+  position:fixed;bottom:0;left:0;right:0;
+  background:var(--navy2);
+  border-top:1px solid rgba(201,162,39,0.3);
+  border-radius:24px 24px 0 0;
+  padding:16px 20px 32px;
+  z-index:101;
+  max-height:88vh;overflow-y:auto;
+  transform:translateY(100%);
+  transition:transform 0.4s cubic-bezier(0.22,1,0.36,1);
+}
+.drawer.on{transform:translateY(0);}
+.drawer-handle{width:40px;height:4px;background:rgba(201,162,39,0.3);border-radius:2px;margin:0 auto 16px;}
+.drawer-title{
+  font-family:'Playfair Display',serif;
+  font-size:20px;font-weight:700;color:var(--gold);
+  text-align:center;letter-spacing:2px;margin-bottom:16px;
+}
+
+/* CART ITEMS */
+.cart-empty{
+  text-align:center;padding:24px 0;
+  font-family:'Playfair Display',serif;
+  font-size:18px;font-style:italic;color:var(--muted);
+}
+.ci{
+  display:flex;align-items:center;gap:10px;
+  padding:12px 0;
+  border-bottom:1px solid rgba(255,255,255,0.06);
+}
+.ci-icon{font-size:24px;min-width:30px;}
+.ci-name{
+  flex:1;font-family:'Playfair Display',serif;
+  font-size:15px;color:var(--white);line-height:1.2;
+}
+.ci-qty{display:flex;align-items:center;gap:10px;}
+.qbtn{
+  width:28px;height:28px;
+  background:rgba(201,162,39,0.12);
+  border:1px solid rgba(201,162,39,0.3);
+  color:var(--gold);border-radius:50%;
+  font-size:18px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:all 0.15s;
+  -webkit-user-select:none;user-select:none;
+}
+.qbtn:active{background:rgba(201,162,39,0.3);}
+.qnum{
+  font-family:'Playfair Display',serif;
+  font-size:15px;color:var(--white);
+  min-width:18px;text-align:center;
+}
+.ci-total{
+  font-family:'Playfair Display',serif;
+  font-size:14px;color:var(--gold2);
+  min-width:70px;text-align:right;
+}
+.total-row{
+  display:flex;justify-content:space-between;
+  padding:14px 0 6px;
+  font-family:'Playfair Display',serif;font-size:18px;font-weight:700;
+  color:var(--gold2);
+  border-top:1px solid rgba(201,162,39,0.25);
+  margin-top:6px;
+}
+
+/* FORM */
+.form-label{font-size:10px;letter-spacing:2px;color:var(--gold);text-transform:uppercase;margin:16px 0 10px;}
+.field{
+  width:100%;
+  background:rgba(255,255,255,0.05);
+  border:1.5px solid rgba(201,162,39,0.2);
+  border-radius:10px;
+  padding:13px 16px;
+  color:var(--white);
+  font-family:'Montserrat',sans-serif;font-size:14px;
+  margin-bottom:10px;outline:none;
+  transition:border-color 0.2s;
+  -webkit-appearance:none;
+}
+.field:focus{border-color:var(--gold);}
+.field::placeholder{color:var(--muted);}
+
+/* WA BUTTON */
+.wa-btn{
+  width:100%;
+  background:linear-gradient(135deg,#25D366,#128C7E);
+  color:#fff;border:none;border-radius:12px;
+  padding:16px;
+  font-family:'Montserrat',sans-serif;
+  font-size:15px;font-weight:700;letter-spacing:0.5px;
+  cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  box-shadow:0 6px 24px rgba(37,211,102,0.35);
+  transition:all 0.2s;
+  -webkit-user-select:none;user-select:none;
+  margin-top:4px;
+}
+.wa-btn:active{transform:scale(0.97);}
+.min-note{text-align:center;font-size:11px;color:var(--muted);margin-top:10px;letter-spacing:0.5px;}
+
+/* FOOTER */
+.footer{
+  text-align:center;padding:24px 20px 100px;
+  border-top:1px solid rgba(201,162,39,0.08);
+}
+.footer-t{font-family:'Playfair Display',serif;font-size:15px;color:var(--gold3);margin-bottom:8px;}
+.footer-s{font-size:11px;color:var(--muted);letter-spacing:0.5px;}
+.soc{display:flex;justify-content:center;gap:12px;margin:12px 0;}
+.soc-chip{
+  font-size:10px;letter-spacing:1px;color:var(--gold);
+  border:1px solid rgba(201,162,39,0.2);
+  border-radius:20px;padding:5px 14px;
+  background:rgba(201,162,39,0.06);
+}
+
+/* TOAST */
+.toast{
+  position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-80px);
+  background:linear-gradient(135deg,var(--gold),var(--gold2));
+  color:var(--navy);font-weight:700;font-size:13px;letter-spacing:0.5px;
+  padding:10px 22px;border-radius:30px;
+  z-index:999;
+  transition:transform 0.35s cubic-bezier(0.22,1,0.36,1);
+  white-space:nowrap;
+  box-shadow:0 6px 20px rgba(201,162,39,0.5);
+}
+.toast.show{transform:translateX(-50%) translateY(0);}
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-glow"></div>
+  <div class="hero-lines"></div>
+  <div class="logo-ring"><div class="logo-hat">👨‍🍳</div></div>
+  <div class="brand">MONACO<span class="brand-bay">Bay</span></div>
+  <div class="hero-sep"><div class="sep-line"></div><div class="sep-diamond">◆</div><div class="sep-line r"></div></div>
+  <div class="tagline">Exquisite Dining Experience</div>
+  <div class="pills">
+    <span class="pill">PAN Asian</span>
+    <span class="pill">Continental</span>
+    <span class="pill">Modern</span>
+    <span class="pill">Delicious</span>
+  </div>
+  <div class="address">📍 22 – Nishtar Block, Bahria Town</div>
+</div>
+
+<!-- PROMO -->
+<div class="promo">
+  <div class="promo-title">🎉 10% Flat Off + Free Delivery</div>
+  <div class="promo-sub">Minimum Order Rs. 1,500 &nbsp;·&nbsp; Open 12:00pm – 1:00am</div>
+</div>
+
+<!-- TABS -->
+<div class="tabs-label">EXPLORE OUR MENU</div>
+<div class="tabs-scroll">
+  <div class="tabs-row" id="tabs-row"></div>
+</div>
+
+<!-- SECTIONS -->
+<div id="sections-wrap"></div>
+
+<!-- FOOTER -->
+<div class="footer">
+  <div class="footer-t">🕐 Open Daily: 12:00 PM – 1:00 AM</div>
+  <div class="soc">
+    <span class="soc-chip">📷 @monacobaypk</span>
+    <span class="soc-chip">📘 @monacobaypk</span>
+  </div>
+  <div class="footer-s">📞 0317-7777100 &nbsp;|&nbsp; 0327-1281618</div>
+</div>
+
+<!-- FAB -->
+<button class="fab" id="fab" onclick="openDrawer()">
+  <span>🛒</span>
+  <span>My Order</span>
+  <div class="fab-badge" id="fab-badge">0</div>
+</button>
+
+<!-- OVERLAY + DRAWER -->
+<div class="overlay" id="overlay" onclick="closeDrawer()"></div>
+<div class="drawer" id="drawer">
+  <div class="drawer-handle"></div>
+  <div class="drawer-title">YOUR ORDER</div>
+  <div id="cart-list"></div>
+  <div id="total-row" style="display:none" class="total-row"><span>TOTAL</span><span id="total-amt"></span></div>
+  <div class="form-label">YOUR DETAILS</div>
+  <input class="field" id="f-name" type="text" placeholder="Full Name" autocomplete="name">
+  <input class="field" id="f-addr" type="text" placeholder="Delivery Address" autocomplete="street-address">
+  <input class="field" id="f-phone" type="tel" placeholder="Phone Number" autocomplete="tel">
+  <button class="wa-btn" onclick="placeOrder()">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+    Place Order on WhatsApp
+  </button>
+  <div class="min-note">Minimum Order: Rs. 1,500 &nbsp;·&nbsp; Free Delivery</div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ========== MENU DATA ==========
+const CATS = [
+  {id:'app',label:'Appetizers',icon:'🦐',note:'',items:[
+    {n:'Tempura Prawns',d:'Crispy golden battered prawns',p:1850,e:'🦐'},
+    {n:'Finger Fish',d:'Crispy fried fish fingers',p:1850,e:'🐟'},
+    {n:'Dynamite Prawns',d:'Spicy dynamite sauce prawns',p:1650,e:'🦐'},
+    {n:'Dynamite Chicken',d:'Crispy chicken dynamite sauce',p:1050,e:'🍗'},
+    {n:'Crispy Wings',d:'Golden fried chicken wings',p:850,e:'🍗'},
+    {n:'Hot Chili / Dynamite / Garlic Mayo Wings',d:'Choice of sauce',p:850,e:'🌶️'},
+    {n:'Chicken Dumplings',d:'Steamed or fried dumplings',p:950,e:'🥟'},
+    {n:'Basket of Fries',d:'Golden crispy fries',p:550,e:'🍟'},
+    {n:'Monaco Loaded Fries',d:'Fries loaded with toppings',p:850,e:'🍟'},
+    {n:'Battered Fried Prawn',d:'Golden battered prawns',p:1850,e:'🦐'},
+  ]},
+  {id:'soup',label:'Soups',icon:'🥣',note:'',items:[
+    {n:'Monaco Special Soup',d:'Chef signature soup (Half/Full)',p:690,e:'🍲'},
+    {n:'Cantonese Hot & Sour Soup',d:'Classic Chinese style (Half/Full)',p:590,e:'🥣'},
+    {n:'Chicken Corn Soup',d:'Creamy corn & chicken (Half/Full)',p:590,e:'🥣'},
+    {n:'Traditional Thai Clear Soup',d:'Light aromatic Thai broth (Half/Full)',p:590,e:'🥣'},
+    {n:'Tom Yum Soup – Chicken',d:'Spicy lemongrass Thai soup',p:590,e:'🌶️'},
+    {n:'Tom Yum Soup – Prawns',d:'Spicy lemongrass Thai soup',p:790,e:'🦐'},
+    {n:'Cream of Chicken & Mushroom',d:'Rich creamy bisque',p:650,e:'🍄'},
+  ]},
+  {id:'sal',label:'Salads',icon:'🥗',note:'',items:[
+    {n:'Crispy Chicken Salad',d:'Fresh greens with crispy chicken',p:750,e:'🥗'},
+    {n:'Signature Salad from Monaco',d:'Chef\'s special signature salad',p:750,e:'🥗'},
+    {n:'Thai Crispy Chicken Salad',d:'Thai-style crispy chicken salad',p:750,e:'🥗'},
+  ]},
+  {id:'chk',label:'Chicken',icon:'🍗',note:'* Served with Choice of Rice',items:[
+    {n:'Monaco Special Chicken',d:'Chef\'s signature chicken (Half/Full)',p:1450,e:'🍗'},
+    {n:'Chicken Chilli Dry',d:'Indo-Chinese dry chilli chicken (Half/Full)',p:1450,e:'🌶️'},
+    {n:'Hot Garlic Chicken',d:'Aromatic garlic chicken (Half/Full)',p:1450,e:'🧄'},
+    {n:'Kung Pao Chicken',d:'Sichuan spicy peanut chicken (Half/Full)',p:1450,e:'🥜'},
+    {n:'Chicken Manchurian',d:'Classic Manchurian gravy (Half/Full)',p:1450,e:'🍗'},
+    {n:'Thai Style Cashewnut Chicken',d:'Stir-fried cashew chicken (Half/Full)',p:1650,e:'🥜'},
+    {n:'Sweet & Sour Chicken',d:'Classic sweet and sour (Half/Full)',p:1550,e:'🍗'},
+  ]},
+  {id:'beef',label:'Beef',icon:'🥩',note:'* Served with Choice of Rice',items:[
+    {n:'Thai Black Pepper Beef',d:'Sizzling black pepper beef (Half/Full)',p:1950,e:'🥩'},
+    {n:'Crispy Sesame Beef',d:'Crispy beef with sesame glaze (Half/Full)',p:1850,e:'🥩'},
+    {n:'Beef Chilli Dry',d:'Dry Indo-Chinese chilli beef (Half/Full)',p:1850,e:'🌶️'},
+  ]},
+  {id:'sea',label:'Sea Food',icon:'🐟',note:'* Served with Choice of Rice',items:[
+    {n:'Hot Garlic Fish',d:'Spicy garlic fish fillet (Half/Full)',p:1950,e:'🐟'},
+    {n:'Hot Garlic Prawn',d:'Spicy garlic prawns (Half/Full)',p:2050,e:'🦐'},
+    {n:'Szechuan Prawns',d:'Fiery Szechuan style (Half/Full)',p:1950,e:'🦐'},
+    {n:'Cantonese Spicy Fish',d:'Cantonese fish fillet (Half/Full)',p:1950,e:'🐟'},
+    {n:'Thai Cashewnut Fish',d:'Pad Thai with cashew & fish',p:1950,e:'🥜'},
+    {n:'Thai Tamarind Fish',d:'Tangy tamarind glazed fish',p:1950,e:'🐟'},
+    {n:'Sweet & Sour Fish',d:'Classic sweet & sour (Half/Full)',p:2050,e:'🐟'},
+    {n:'Sweet & Sour Prawn',d:'Classic sweet & sour (Half/Full)',p:2050,e:'🦐'},
+    {n:'Grilled Fish Lemon Butter',d:'Tender grilled fish, lemon butter sauce',p:2050,e:'🐟'},
+    {n:'Fish Chilli Dry',d:'Dry chilli fish (Half/Full)',p:1950,e:'🌶️'},
+    {n:'Prawn Chilli Dry',d:'Dry chilli prawn (Half/Full)',p:1950,e:'🌶️'},
+  ]},
+  {id:'con',label:'Continental',icon:'🍽️',note:'',items:[
+    {n:'Crispy Cheesy Stuffed Chicken',d:'Crispy chicken stuffed with cheese',p:2150,e:'🍗'},
+    {n:'Napoleon Chicken',d:'Elegant Napoleon-style chicken',p:2250,e:'🍽️'},
+    {n:'Smoked Demi Chicken',d:'Half chicken smoked to perfection',p:1950,e:'🍗'},
+    {n:'Grilled Chicken Tarragon Sauce',d:'Classic French tarragon cream',p:1950,e:'🌿'},
+    {n:'Grilled Chicken Mushroom Sauce',d:'Juicy chicken, rich mushroom sauce',p:1950,e:'🍄'},
+    {n:'Grilled Chicken Moroccan Sauce',d:'North African spiced chicken',p:1950,e:'🍗'},
+    {n:'Crispy Honey Mustard Chicken',d:'Crispy chicken honey mustard glaze',p:2050,e:'🍯'},
+    {n:'Chicken Roulade',d:'Elegant rolled stuffed chicken',p:2250,e:'🍽️'},
+    {n:'Classic Fish & Chips',d:'Traditional battered fish with chips',p:2150,e:'🐟'},
+  ]},
+  {id:'piz',label:'Pizza',icon:'🍕',note:'Available in Small · Medium · Large',items:[
+    {n:'Chicken Tikka Pizza (Small)',d:'Classic chicken tikka',p:690,e:'🍕'},
+    {n:'Chicken Tikka Pizza (Medium)',d:'Classic chicken tikka',p:1290,e:'🍕'},
+    {n:'Chicken Tikka Pizza (Large)',d:'Classic chicken tikka',p:1690,e:'🍕'},
+    {n:'Cheese Lovers Pizza (Small)',d:'Loaded premium cheeses',p:690,e:'🧀'},
+    {n:'Cheese Lovers Pizza (Medium)',d:'Loaded premium cheeses',p:1290,e:'🧀'},
+    {n:'Cheese Lovers Pizza (Large)',d:'Loaded premium cheeses',p:1690,e:'🧀'},
+    {n:'Chicken Fajita Pizza (Small)',d:'Mexican inspired fajita',p:690,e:'🍕'},
+    {n:'Chicken Fajita Pizza (Medium)',d:'Mexican inspired fajita',p:1290,e:'🍕'},
+    {n:'Chicken Fajita Pizza (Large)',d:'Mexican inspired fajita',p:1690,e:'🍕'},
+    {n:'Monaco Special Pizza (Small)',d:'Signature house pizza',p:690,e:'⭐'},
+    {n:'Monaco Special Pizza (Medium)',d:'Signature house pizza',p:1290,e:'⭐'},
+    {n:'Monaco Special Pizza (Large)',d:'Signature house pizza',p:1690,e:'⭐'},
+  ]},
+  {id:'bur',label:'Burgers',icon:'🍔',note:'',items:[
+    {n:'Monaco Special Beef Burger',d:'Signature beef patty, special sauce',p:1350,e:'🍔'},
+    {n:'Crispy Chicken Korean Burger',d:'Korean-style crispy chicken',p:1150,e:'🍔'},
+    {n:'Grilled Chicken Burger',d:'Juicy grilled chicken fillet',p:1050,e:'🍔'},
+    {n:'Crispy Dynamite Burger',d:'Crispy chicken, dynamite sauce',p:1250,e:'🍔'},
+  ]},
+  {id:'san',label:'Sandwich',icon:'🥪',note:'',items:[
+    {n:'Classic Club Sandwich',d:'Triple-decker classic club',p:1050,e:'🥪'},
+    {n:'Grilled Chicken Sandwich',d:'Grilled chicken fillet sandwich',p:1050,e:'🥪'},
+    {n:'Open Face Sandwich',d:'Elegant open-faced sandwich',p:1250,e:'🍞'},
+  ]},
+  {id:'wrp',label:'Wraps',icon:'🌯',note:'',items:[
+    {n:'Dynamite Chicken Wrap',d:'Crispy chicken, dynamite sauce',p:1050,e:'🌯'},
+    {n:'Spicy Maya Garlic Wrap',d:'Garlic spiced chicken wrap',p:1050,e:'🧄'},
+    {n:'Spicy Maya Beef Wrap',d:'Spiced beef Maya wrap',p:1250,e:'🥩'},
+  ]},
+  {id:'nod',label:'Noodles & Rice',icon:'🍜',note:'',items:[
+    {n:'Chicken Chow Mien',d:'Classic stir-fried noodles (Half/Full)',p:1350,e:'🍜'},
+    {n:'Monaco Special Noodles',d:'Chef\'s signature noodles (Half/Full)',p:1650,e:'🍜'},
+    {n:'Pad Thai Noodles Chicken',d:'Authentic Thai pad noodles',p:1750,e:'🍜'},
+    {n:'Fiery Dragon Chicken Noodles',d:'Spicy dragon-style noodles',p:1550,e:'🐉'},
+    {n:'Egg Fried Rice',d:'Classic wok egg fried rice (Half/Full)',p:650,e:'🍳'},
+    {n:'Garlic Rice',d:'Aromatic garlic fried rice (Half/Full)',p:650,e:'🧄'},
+    {n:'Masala Rice',d:'Spiced masala rice (Half/Full)',p:650,e:'🍚'},
+    {n:'Steamed Rice',d:'Plain steamed basmati rice (Half/Full)',p:590,e:'🍚'},
+    {n:'Chicken Fried Rice',d:'Classic chicken fried rice (Half/Full)',p:850,e:'🍗'},
+  ]},
+  {id:'pas',label:'Pasta',icon:'🍝',note:'',items:[
+    {n:'Penne Arrabbiata',d:'Classic spicy tomato sauce penne',p:1350,e:'🍝'},
+    {n:'Cannelloni Pasta',d:'Stuffed rolled pasta tubes',p:1650,e:'🍝'},
+    {n:'Creamy Alfredo Fettuccine',d:'Rich cream Alfredo sauce',p:1450,e:'🍝'},
+    {n:'Mac & Cheese Bowl',d:'Creamy macaroni and cheese',p:1650,e:'🧀'},
+    {n:'Chicken Lasagne',d:'Layered chicken lasagne',p:1650,e:'🍝'},
+  ]},
+  {id:'des',label:'Desserts',icon:'🍰',note:'',items:[
+    {n:'Molten Lava',d:'Warm chocolate lava cake',p:790,e:'🍫'},
+    {n:'Sizzling Skillet Brownie',d:'Hot brownie sizzler with ice cream',p:790,e:'🍰'},
+    {n:'Lotos Freak Shake',d:'Over-the-top Lotus shake',p:690,e:'🥤'},
+    {n:'Kit Kat Freak Shake',d:'Indulgent Kit Kat milkshake',p:690,e:'🥤'},
+    {n:'Oreo & Cream Freak Shake',d:'Classic Oreo cream shake',p:690,e:'🥤'},
+  ]},
+  {id:'drk',label:'Drinks',icon:'🥤',note:'',items:[
+    {n:'Wild Berry Chiller',d:'Mixed berry cooler',p:590,e:'🫐'},
+    {n:'Mint Margarita',d:'Classic mint margarita mocktail',p:450,e:'🍃'},
+    {n:'Pina Colada',d:'Tropical pineapple coconut blend',p:590,e:'🍍'},
+    {n:'Strawberry & Peach Fusion',d:'Fresh fruit fusion drink',p:590,e:'🍓'},
+    {n:'Refreshing Lemonade',d:'Fresh squeezed lemonade',p:390,e:'🍋'},
+    {n:'Blue Mint Lemonade',d:'Blue lagoon mint lemonade',p:550,e:'💙'},
+    {n:'Electric Fusion',d:'Electrifying flavour fusion',p:520,e:'⚡'},
+    {n:'Peach Iced Tea',d:'Chilled peach iced tea',p:590,e:'🍑'},
+    {n:'English Tea',d:'Classic hot English tea',p:290,e:'☕'},
+    {n:'Green Tea',d:'Soothing hot green tea',p:250,e:'🍵'},
+    {n:'Mixed Tea',d:'Special blended tea',p:290,e:'☕'},
+    {n:'Cardamom Tea',d:'Aromatic cardamom chai',p:350,e:'☕'},
+    {n:'Hot Chocolate',d:'Rich creamy hot chocolate',p:490,e:'🍫'},
+    {n:'Mineral Water Small',d:'500ml chilled mineral water',p:120,e:'💧'},
+    {n:'Mineral Water Large',d:'1.5L chilled mineral water',p:190,e:'💧'},
+    {n:'Coke / Diet Coke / Sprite',d:'Carbonated soft drinks',p:190,e:'🥤'},
+    {n:'Fresh Lime',d:'Freshly squeezed lime water',p:250,e:'🍋'},
+  ]},
+  {id:'sid',label:'Sides',icon:'🍟',note:'',items:[
+    {n:'Rice',d:'Steamed basmati rice portion',p:250,e:'🍚'},
+    {n:'Fries',d:'Golden crispy fries',p:250,e:'🍟'},
+    {n:'Garlic Bread',d:'Toasted garlic bread slices',p:250,e:'🍞'},
+    {n:'Smashed Potato',d:'Creamy smashed potato',p:150,e:'🥔'},
+    {n:'Crackers Basket',d:'Assorted crackers basket',p:150,e:'🫙'},
+  ]},
+];
+
+// ========== BUILD UI ==========
+const tabsRow = document.getElementById('tabs-row');
+const sectionsWrap = document.getElementById('sections-wrap');
+
+CATS.forEach((cat,ci)=>{
+  // TAB
+  const btn = document.createElement('button');
+  btn.className = 'tab-btn' + (ci===0?' on':'');
+  btn.textContent = cat.label;
+  btn.setAttribute('data-cat', cat.id);
+  btn.onclick = ()=> showTab(cat.id, btn);
+  tabsRow.appendChild(btn);
+
+  // SECTION
+  const sec = document.createElement('div');
+  sec.className = 'section' + (ci===0?' on':'');
+  sec.id = 'sec-'+cat.id;
+
+  let html = `<div class="cat-title"><span>${cat.icon}</span> ${cat.label.toUpperCase()}</div>`;
+  if(cat.note) html += `<div class="note">${cat.note}</div>`;
+
+  cat.items.forEach((item,ii)=>{
+    html += `
+    <div class="card">
+      <div class="card-icon">${item.e}</div>
+      <div class="card-body">
+        <div class="card-name">${item.n}</div>
+        <div class="card-desc">${item.d}</div>
+      </div>
+      <div class="card-right">
+        <div class="card-price">Rs.${item.p}</div>
+        <button class="add" onclick="addItem('${cat.id}',${ii})">+</button>
+      </div>
+    </div>`;
+  });
+  sec.innerHTML = html;
+  sectionsWrap.appendChild(sec);
+});
+
+// ========== TABS ==========
+function showTab(id, btn){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('on'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('on'));
+  document.getElementById('sec-'+id).classList.add('on');
+  btn.classList.add('on');
+  btn.scrollIntoView({behavior:'smooth',inline:'center',block:'nearest'});
+}
+
+// ========== CART ==========
+let cart = [];
+
+function addItem(catId, itemIdx){
+  const item = CATS.find(c=>c.id===catId).items[itemIdx];
+  const ex = cart.find(i=>i.n===item.n);
+  if(ex){ ex.q++; } else { cart.push({n:item.n,p:item.p,e:item.e,q:1}); }
+  updateBadge();
+  showToast('Added: '+item.n);
+}
+
+function updateBadge(){
+  const total = cart.reduce((s,i)=>s+i.q,0);
+  document.getElementById('fab-badge').textContent = total;
+}
+
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = '✓ '+msg;
+  t.classList.add('show');
+  clearTimeout(window._tt);
+  window._tt = setTimeout(()=>t.classList.remove('show'),1800);
+}
+
+// ========== DRAWER ==========
+function openDrawer(){
+  renderCart();
+  document.getElementById('overlay').classList.add('on');
+  document.getElementById('drawer').classList.add('on');
+}
+
+function closeDrawer(){
+  document.getElementById('overlay').classList.remove('on');
+  document.getElementById('drawer').classList.remove('on');
+}
+
+function renderCart(){
+  const list = document.getElementById('cart-list');
+  const totalRow = document.getElementById('total-row');
+  if(!cart.length){
+    list.innerHTML = '<div class="cart-empty">Abhi order empty hai!<br>Kuch tasty add karo 🍽️</div>';
+    totalRow.style.display='none';
+    return;
+  }
+  let html='', total=0;
+  cart.forEach((item,i)=>{
+    const t=item.p*item.q; total+=t;
+    html+=`<div class="ci">
+      <span class="ci-icon">${item.e}</span>
+      <span class="ci-name">${item.n}</span>
+      <div class="ci-qty">
+        <button class="qbtn" onclick="chgQ(${i},-1)">−</button>
+        <span class="qnum">${item.q}</span>
+        <button class="qbtn" onclick="chgQ(${i},1)">+</button>
+      </div>
+      <span class="ci-total">Rs.${t}</span>
+    </div>`;
+  });
+  list.innerHTML = html;
+  document.getElementById('total-amt').textContent = 'Rs. '+total;
+  totalRow.style.display='flex';
+}
+
+function chgQ(i, d){
+  cart[i].q += d;
+  if(cart[i].q<=0) cart.splice(i,1);
+  updateBadge();
+  renderCart();
+}
+
+// ========== WHATSAPP ORDER ==========
+function placeOrder(){
+  if(!cart.length){ alert('Pehle kuch items add karo! 🍽️'); return; }
+  const name = document.getElementById('f-name').value.trim();
+  const addr = document.getElementById('f-addr').value.trim();
+  const phone = document.getElementById('f-phone').value.trim();
+  if(!name){ alert('Apna naam likhein!'); return; }
+  if(!addr){ alert('Delivery address likhein!'); return; }
+  if(!phone){ alert('Phone number likhein!'); return; }
+
+  let total = 0;
+  let msg = `🏆 *MONACO BAY – NEW ORDER*\n`;
+  msg += `${'─'.repeat(28)}\n`;
+  msg += `👤 *Name:* ${name}\n`;
+  msg += `📞 *Phone:* ${phone}\n`;
+  msg += `📍 *Address:* ${addr}\n`;
+  msg += `${'─'.repeat(28)}\n`;
+  msg += `🍽️ *ORDER ITEMS:*\n`;
+  cart.forEach(item=>{
+    const t = item.p * item.q;
+    total += t;
+    msg += `${item.e} ${item.n}\n   × ${item.q}  =  Rs. ${t}\n`;
+  });
+  msg += `${'─'.repeat(28)}\n`;
+  msg += `💰 *TOTAL: Rs. ${total}*\n`;
+  msg += `${'─'.repeat(28)}\n`;
+  msg += `_Thank you for ordering from Monaco Bay! 🌟_\n`;
+  msg += `_22 – Nishtar Block, Bahria Town_`;
+
+  const url = 'https://api.whatsapp.com/send?phone=923199832659&text=' + encodeURIComponent(msg);
+  const a = document.createElement('a'); a.href = url; a.target = '_blank'; a.rel = 'noopener'; document.body.appendChild(a); a.click(); setTimeout(()=> document.body.removeChild(a), 100);
+}
+</script>
+</body>
+</html>

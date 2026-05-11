@@ -1,0 +1,1838 @@
+<!DOCTYPE html>
+<html lang="ur">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Café Los Angeles — POS System</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --blue-dark: #050d1a;
+    --blue-deep: #0a1628;
+    --blue-mid: #0d2147;
+    --blue-bright: #1a3a7a;
+    --blue-accent: #1e6fd9;
+    --blue-glow: #2d8bff;
+    --blue-light: #5aa8ff;
+    --blue-pale: #a8d0ff;
+    --gold: #f5c518;
+    --gold-dim: #c9971a;
+    --white: #f0f6ff;
+    --gray: #8ab0d8;
+    --success: #00e676;
+    --danger: #ff4444;
+    --border: rgba(45,139,255,0.25);
+    --glass: rgba(13,33,71,0.7);
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--blue-dark);
+    color: var(--white);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Background grid effect */
+  body::before {
+    content:'';
+    position:fixed;
+    inset:0;
+    background:
+      linear-gradient(rgba(30,111,217,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(30,111,217,0.04) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events:none;
+    z-index:0;
+  }
+
+  /* ===== TOP NAV ===== */
+  .topnav {
+    position: sticky; top:0; z-index:1000;
+    background: linear-gradient(135deg, var(--blue-deep) 0%, var(--blue-mid) 100%);
+    border-bottom: 2px solid var(--blue-accent);
+    box-shadow: 0 4px 30px rgba(30,111,217,0.4);
+    padding: 0 20px;
+    display:flex; align-items:center; justify-content:space-between;
+    height:64px;
+  }
+
+  .brand {
+    font-family: 'Orbitron', monospace;
+    font-size: 1.3rem;
+    font-weight: 900;
+    background: linear-gradient(90deg, var(--gold), var(--blue-glow));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: 2px;
+  }
+
+  .nav-tabs {
+    display:flex; gap:4px;
+  }
+
+  .nav-tab {
+    padding: 8px 18px;
+    border:none; cursor:pointer;
+    font-family: 'Rajdhani', sans-serif;
+    font-weight:700; font-size:0.95rem;
+    border-radius: 8px;
+    transition: all 0.2s;
+    background: transparent;
+    color: var(--gray);
+    letter-spacing: 1px;
+  }
+
+  .nav-tab.active, .nav-tab:hover {
+    background: var(--blue-accent);
+    color: #fff;
+    box-shadow: 0 0 20px rgba(30,111,217,0.5);
+  }
+
+  .powered-tag {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--gold-dim);
+    letter-spacing: 1px;
+    border: 1px solid var(--gold-dim);
+    padding: 3px 10px;
+    border-radius: 20px;
+    white-space: nowrap;
+    opacity: 0.85;
+  }
+
+  .clock {
+    font-family:'Orbitron', monospace;
+    font-size:0.9rem;
+    color: var(--blue-light);
+  }
+
+  /* ===== PAGES ===== */
+  .page { display:none; padding:20px; position:relative; z-index:1; }
+  .page.active { display:block; }
+
+  /* ===== POS PAGE ===== */
+  .pos-layout {
+    display:grid;
+    grid-template-columns: 1fr 380px;
+    gap:20px;
+    height: calc(100vh - 84px);
+  }
+
+  /* Left: Menu */
+  .menu-panel {
+    display:flex; flex-direction:column; gap:12px; overflow:hidden;
+  }
+
+  .search-bar {
+    position:relative;
+  }
+
+  .search-bar input {
+    width:100%;
+    padding:12px 20px 12px 44px;
+    background: var(--glass);
+    border: 1px solid var(--border);
+    border-radius:12px;
+    color: var(--white);
+    font-size:0.95rem;
+    outline:none;
+    transition:0.2s;
+  }
+
+  .search-bar input:focus { border-color: var(--blue-accent); box-shadow: 0 0 20px rgba(30,111,217,0.3); }
+  .search-bar::before { content:'🔍'; position:absolute; left:14px; top:50%; transform:translateY(-50%); font-size:1rem; }
+
+  .category-tabs {
+    display:flex; gap:8px; flex-wrap:wrap;
+  }
+
+  .cat-tab {
+    padding:6px 14px;
+    border-radius:20px;
+    border: 1px solid var(--border);
+    background: var(--glass);
+    color: var(--gray);
+    cursor:pointer;
+    font-size:0.8rem;
+    font-weight:600;
+    transition:0.2s;
+    white-space:nowrap;
+  }
+
+  .cat-tab.active, .cat-tab:hover {
+    background: var(--blue-accent);
+    border-color: var(--blue-accent);
+    color:#fff;
+  }
+
+  .menu-grid {
+    display:grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap:10px;
+    overflow-y:auto;
+    padding-right:4px;
+    align-content:start;
+  }
+
+  .menu-grid::-webkit-scrollbar { width:4px; }
+  .menu-grid::-webkit-scrollbar-track { background:transparent; }
+  .menu-grid::-webkit-scrollbar-thumb { background:var(--blue-accent); border-radius:2px; }
+
+  .menu-item {
+    background: var(--glass);
+    border: 1px solid var(--border);
+    border-radius:10px;
+    padding:12px 14px;
+    cursor:pointer;
+    transition: all 0.18s;
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+    position:relative;
+    overflow:hidden;
+    min-height:90px;
+    justify-content:space-between;
+  }
+
+  .menu-item:hover {
+    border-color:var(--blue-accent);
+    background: rgba(30,111,217,0.18);
+    transform:translateY(-3px);
+    box-shadow:0 6px 24px rgba(30,111,217,0.3);
+  }
+  .menu-item:active { transform:scale(0.97); }
+
+  .item-left {
+    flex:1;
+    min-width:0;
+  }
+
+  .item-name {
+    font-family:'Rajdhani', sans-serif;
+    font-weight:700;
+    font-size:0.9rem;
+    line-height:1.2;
+    color:var(--white);
+    word-break:break-word;
+    white-space:normal;
+  }
+
+  .item-cat {
+    font-size:0.65rem;
+    color:var(--blue-light);
+    margin-top:3px;
+    letter-spacing:0.5px;
+  }
+
+  .item-bottom-row {
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+  }
+
+  .item-price-block {
+    text-align:left;
+    flex-shrink:0;
+  }
+
+  .item-price {
+    font-family:'Orbitron', monospace;
+    font-size:0.9rem;
+    color:var(--gold);
+    font-weight:700;
+  }
+
+  .item-price-half {
+    font-size:0.68rem;
+    color:var(--gray);
+    display:block;
+    margin-top:2px;
+  }
+
+  .item-add-btn {
+    width:28px; height:28px;
+    background: var(--blue-accent);
+    border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    color:#fff;
+    font-size:1.1rem;
+    font-weight:700;
+    flex-shrink:0;
+    transition:0.15s;
+  }
+
+  .menu-item:hover .item-add-btn {
+    background: var(--gold);
+    color: var(--blue-dark);
+  }
+
+  /* Right: Order Panel */
+  .order-panel {
+    background: var(--glass);
+    border: 1px solid var(--border);
+    border-radius:16px;
+    display:flex;
+    flex-direction:column;
+    overflow:hidden;
+    backdrop-filter:blur(10px);
+  }
+
+  .order-header {
+    padding:16px 20px;
+    background: linear-gradient(135deg, var(--blue-mid), var(--blue-bright));
+    border-bottom:1px solid var(--border);
+  }
+
+  .order-header h3 {
+    font-family:'Orbitron', monospace;
+    font-size:0.95rem;
+    color:var(--gold);
+    letter-spacing:2px;
+  }
+
+  .order-info {
+    display:flex; gap:10px; margin-top:10px;
+  }
+
+  .order-info input, .order-info select {
+    flex:1;
+    padding:8px 12px;
+    background: rgba(5,13,26,0.5);
+    border: 1px solid var(--border);
+    border-radius:8px;
+    color:var(--white);
+    font-size:0.8rem;
+    outline:none;
+  }
+
+  .order-items {
+    flex:1;
+    overflow-y:auto;
+    padding:12px;
+  }
+
+  .order-items::-webkit-scrollbar { width:3px; }
+  .order-items::-webkit-scrollbar-thumb { background:var(--blue-accent); }
+
+  .order-row {
+    display:flex;
+    align-items:center;
+    gap:8px;
+    padding:8px 0;
+    border-bottom:1px solid rgba(45,139,255,0.1);
+    animation: slideIn 0.2s ease;
+  }
+
+  @keyframes slideIn { from{opacity:0;transform:translateX(20px)} to{opacity:1;transform:none} }
+
+  .order-row-name {
+    flex:1;
+    font-size:0.8rem;
+    font-family:'Rajdhani', sans-serif;
+    font-weight:600;
+  }
+
+  .qty-ctrl {
+    display:flex; align-items:center; gap:4px;
+  }
+
+  .qty-btn {
+    width:24px; height:24px;
+    border:none; border-radius:6px;
+    background:var(--blue-accent);
+    color:#fff;
+    cursor:pointer;
+    font-size:0.9rem;
+    font-weight:700;
+    transition:0.15s;
+  }
+
+  .qty-btn:hover { background:var(--blue-glow); }
+
+  .qty-val {
+    width:28px;
+    text-align:center;
+    font-weight:700;
+    font-size:0.9rem;
+  }
+
+  .order-row-price {
+    font-family:'Orbitron', monospace;
+    font-size:0.8rem;
+    color:var(--gold);
+    min-width:60px;
+    text-align:right;
+  }
+
+  .del-btn {
+    background:none;
+    border:none;
+    color:var(--danger);
+    cursor:pointer;
+    font-size:1rem;
+    padding:0 4px;
+  }
+
+  .order-footer {
+    padding:16px;
+    border-top:2px solid var(--border);
+    background: rgba(5,13,26,0.5);
+  }
+
+  .totals { margin-bottom:12px; }
+
+  .total-row {
+    display:flex; justify-content:space-between;
+    font-size:0.85rem; padding:4px 0;
+    color:var(--gray);
+  }
+
+  .total-row.grand {
+    font-family:'Orbitron', monospace;
+    font-size:1.1rem;
+    color:var(--gold);
+    border-top:1px solid var(--border);
+    padding-top:8px;
+    margin-top:4px;
+  }
+
+  .discount-row {
+    display:flex; gap:8px; margin-bottom:10px;
+  }
+
+  .discount-row input {
+    flex:1;
+    padding:8px;
+    background:rgba(5,13,26,0.5);
+    border:1px solid var(--border);
+    border-radius:8px;
+    color:var(--white);
+    font-size:0.8rem;
+    outline:none;
+  }
+
+  .btn {
+    width:100%;
+    padding:14px;
+    border:none;
+    border-radius:12px;
+    cursor:pointer;
+    font-family:'Rajdhani', sans-serif;
+    font-weight:700;
+    font-size:1rem;
+    letter-spacing:1px;
+    transition:all 0.2s;
+    margin-bottom:6px;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, var(--blue-accent), var(--blue-glow));
+    color:#fff;
+    box-shadow: 0 4px 20px rgba(30,111,217,0.4);
+  }
+
+  .btn-primary:hover { box-shadow: 0 6px 30px rgba(30,111,217,0.6); transform:translateY(-1px); }
+
+  .btn-gold {
+    background: linear-gradient(135deg, var(--gold-dim), var(--gold));
+    color:var(--blue-dark);
+  }
+
+  .btn-danger {
+    background: rgba(255,68,68,0.15);
+    border: 1px solid var(--danger);
+    color:var(--danger);
+  }
+
+  /* ===== CALENDAR PAGE ===== */
+  .cal-layout {
+    display:grid;
+    grid-template-columns: 420px 1fr;
+    gap:20px;
+    height: calc(100vh - 104px);
+  }
+
+  .cal-panel {
+    background:var(--glass);
+    border:1px solid var(--border);
+    border-radius:16px;
+    overflow:hidden;
+    backdrop-filter:blur(10px);
+  }
+
+  .cal-nav {
+    display:flex; align-items:center; justify-content:space-between;
+    padding:14px 18px;
+    background: linear-gradient(135deg, var(--blue-mid), var(--blue-bright));
+    border-bottom:2px solid var(--blue-accent);
+  }
+
+  .cal-nav button {
+    background:rgba(30,111,217,0.3);
+    border:1px solid var(--blue-accent);
+    border-radius:8px;
+    color:#fff; padding:6px 16px; cursor:pointer;
+    font-weight:700; font-size:1.1rem;
+    transition:0.2s;
+  }
+
+  .cal-nav button:hover { background:var(--blue-accent); }
+
+  .cal-nav h3 {
+    font-family:'Orbitron', monospace;
+    font-size:1rem;
+    color:var(--gold);
+    letter-spacing:2px;
+  }
+
+  /* TABLE-STYLE CALENDAR GRID */
+  .cal-table {
+    width:100%;
+    border-collapse:collapse;
+    table-layout:fixed;
+  }
+
+  .cal-table thead tr {
+    background: rgba(13,33,71,0.9);
+    border-bottom:2px solid var(--blue-accent);
+  }
+
+  .cal-table th {
+    padding:10px 4px;
+    text-align:center;
+    font-family:'Rajdhani', sans-serif;
+    font-size:0.8rem;
+    font-weight:700;
+    color:var(--blue-pale);
+    letter-spacing:1px;
+    border-right:1px solid var(--border);
+  }
+
+  .cal-table th:last-child { border-right:none; }
+
+  .cal-table td {
+    height:54px;
+    vertical-align:top;
+    padding:0;
+    border-right:1px solid rgba(45,139,255,0.15);
+    border-bottom:1px solid rgba(45,139,255,0.15);
+    position:relative;
+    cursor:pointer;
+    transition:background 0.15s;
+  }
+
+  .cal-table td:last-child { border-right:none; }
+  .cal-table tr:last-child td { border-bottom:none; }
+
+  .cal-table td.cal-empty {
+    cursor:default;
+    background: rgba(5,13,26,0.3);
+  }
+
+  .cal-table td:not(.cal-empty):hover {
+    background: rgba(30,111,217,0.15);
+  }
+
+  .cal-table td.cal-today { background: rgba(30,111,217,0.2); }
+  .cal-table td.cal-today .cal-day-num {
+    background: var(--blue-accent);
+    color:#fff;
+    border-radius:50%;
+  }
+
+  .cal-table td.cal-selected { background: rgba(245,197,24,0.1); }
+  .cal-table td.cal-selected .cal-day-num {
+    background: var(--gold);
+    color: var(--blue-dark);
+    border-radius:50%;
+  }
+
+  .cal-day-num {
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    width:28px; height:28px;
+    font-size:0.85rem;
+    font-weight:700;
+    margin:5px 5px 2px 5px;
+    font-family:'Rajdhani', sans-serif;
+    transition:0.15s;
+  }
+
+  .cal-day-sales {
+    font-size:0.62rem;
+    color:var(--gold);
+    font-family:'Rajdhani', sans-serif;
+    font-weight:700;
+    padding:0 5px;
+    line-height:1.2;
+    white-space:nowrap;
+    overflow:hidden;
+  }
+
+  .cal-day-dot {
+    display:inline-block;
+    width:5px; height:5px;
+    background:var(--gold);
+    border-radius:50%;
+    margin-right:3px;
+    vertical-align:middle;
+  }
+
+  /* Monthly summary below calendar */
+  .cal-summary {
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:0;
+    border-top:2px solid var(--blue-accent);
+  }
+
+  .cal-summary-item {
+    padding:12px 16px;
+    border-right:1px solid var(--border);
+    text-align:center;
+  }
+
+  .cal-summary-item:last-child { border-right:none; }
+
+  .cal-summary-val {
+    font-family:'Orbitron', monospace;
+    font-size:1rem;
+    color:var(--gold);
+    font-weight:700;
+  }
+
+  .cal-summary-label {
+    font-size:0.7rem;
+    color:var(--gray);
+    font-family:'Rajdhani', sans-serif;
+    letter-spacing:1px;
+    margin-top:2px;
+  }
+
+  .day-detail {
+    background:var(--glass);
+    border:1px solid var(--border);
+    border-radius:16px;
+    padding:20px;
+    backdrop-filter:blur(10px);
+    overflow-y:auto;
+    max-height:calc(100vh - 120px);
+  }
+
+  .day-detail h2 {
+    font-family:'Orbitron', monospace;
+    font-size:1rem;
+    color:var(--gold);
+    margin-bottom:16px;
+  }
+
+  .slip-card {
+    background:rgba(5,13,26,0.6);
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:16px;
+    margin-bottom:12px;
+    cursor:pointer;
+    transition:0.2s;
+  }
+
+  .slip-card:hover { border-color:var(--blue-accent); }
+
+  .slip-card-header {
+    display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;
+  }
+
+  .slip-no {
+    font-family:'Orbitron', monospace;
+    font-size:0.8rem;
+    color:var(--blue-light);
+  }
+
+  .slip-total {
+    font-family:'Orbitron', monospace;
+    font-size:0.9rem;
+    color:var(--gold);
+  }
+
+  /* ===== SALES REPORTS ===== */
+  .reports-grid {
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:16px;
+    margin-bottom:24px;
+  }
+
+  .stat-card {
+    background:var(--glass);
+    border:1px solid var(--border);
+    border-radius:16px;
+    padding:20px;
+    backdrop-filter:blur(10px);
+    text-align:center;
+  }
+
+  .stat-icon { font-size:2rem; margin-bottom:8px; }
+
+  .stat-val {
+    font-family:'Orbitron', monospace;
+    font-size:1.4rem;
+    color:var(--gold);
+    font-weight:700;
+  }
+
+  .stat-label {
+    font-size:0.8rem;
+    color:var(--gray);
+    margin-top:4px;
+    font-family:'Rajdhani', sans-serif;
+    font-weight:600;
+    letter-spacing:1px;
+  }
+
+  .table-wrap {
+    background:var(--glass);
+    border:1px solid var(--border);
+    border-radius:16px;
+    overflow:hidden;
+    backdrop-filter:blur(10px);
+    margin-bottom:20px;
+  }
+
+  .table-header {
+    padding:16px 20px;
+    background:linear-gradient(135deg,var(--blue-mid),var(--blue-bright));
+    border-bottom:1px solid var(--border);
+    display:flex; align-items:center; justify-content:space-between;
+  }
+
+  .table-header h3 {
+    font-family:'Orbitron', monospace;
+    font-size:0.85rem;
+    letter-spacing:2px;
+    color:var(--gold);
+  }
+
+  table {
+    width:100%;
+    border-collapse:collapse;
+  }
+
+  th {
+    padding:12px 16px;
+    text-align:left;
+    font-size:0.75rem;
+    font-weight:700;
+    color:var(--blue-pale);
+    letter-spacing:1px;
+    border-bottom:1px solid var(--border);
+    font-family:'Rajdhani', sans-serif;
+  }
+
+  td {
+    padding:12px 16px;
+    font-size:0.85rem;
+    border-bottom:1px solid rgba(45,139,255,0.07);
+  }
+
+  tr:last-child td { border:none; }
+  tr:hover td { background:rgba(30,111,217,0.07); }
+
+  /* ===== PRINT SLIP ===== */
+  @media print {
+    body * { visibility:hidden; }
+    #print-area, #print-area * { visibility:visible; }
+    #print-area {
+      position:fixed; top:0; left:0;
+      width:80mm;
+      background:#fff;
+      color:#000;
+    }
+  }
+
+  #print-area {
+    display:none;
+    position:fixed;
+    top:-9999px;
+    left:-9999px;
+  }
+
+  /* ===== MODAL ===== */
+  .modal-overlay {
+    display:none;
+    position:fixed; inset:0;
+    background:rgba(5,13,26,0.85);
+    z-index:2000;
+    backdrop-filter:blur(4px);
+    align-items:center;
+    justify-content:center;
+  }
+
+  .modal-overlay.open { display:flex; }
+
+  .modal {
+    background:var(--blue-deep);
+    border:1px solid var(--blue-accent);
+    border-radius:20px;
+    padding:28px;
+    max-width:420px;
+    width:90%;
+    box-shadow:0 20px 60px rgba(30,111,217,0.5);
+    animation:modalIn 0.3s ease;
+  }
+
+  @keyframes modalIn { from{opacity:0;transform:scale(0.9)} to{opacity:1;transform:none} }
+
+  .modal h3 {
+    font-family:'Orbitron', monospace;
+    color:var(--gold);
+    margin-bottom:16px;
+    font-size:1rem;
+    letter-spacing:2px;
+  }
+
+  /* Slip preview in modal */
+  .slip-preview {
+    background:#fff;
+    color:#000;
+    border-radius:8px;
+    padding:16px;
+    font-family:monospace;
+    font-size:12px;
+    line-height:1.6;
+    white-space:pre;
+    max-height:400px;
+    overflow-y:auto;
+  }
+
+  .modal-btns { display:flex; gap:10px; margin-top:16px; }
+
+  .modal-btns .btn { margin:0; }
+
+  /* Half/Full selector */
+  .size-select {
+    display:flex; gap:6px; margin-top:6px;
+  }
+
+  .size-btn {
+    flex:1; padding:6px;
+    border:1px solid var(--border);
+    border-radius:6px;
+    background:transparent;
+    color:var(--gray);
+    cursor:pointer;
+    font-size:0.75rem;
+    font-weight:700;
+    transition:0.2s;
+  }
+
+  .size-btn.active { background:var(--blue-accent); border-color:var(--blue-accent); color:#fff; }
+
+  /* Toast */
+  .toast {
+    position:fixed; bottom:30px; right:30px;
+    background:var(--blue-accent);
+    color:#fff;
+    padding:12px 20px;
+    border-radius:10px;
+    font-weight:600;
+    z-index:3000;
+    animation:toastIn 0.3s ease, toastOut 0.3s ease 2.5s forwards;
+    font-family:'Rajdhani', sans-serif;
+    letter-spacing:1px;
+  }
+
+  @keyframes toastIn { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:none} }
+  @keyframes toastOut { to{opacity:0;transform:translateY(20px)} }
+
+  /* Report period buttons */
+  .period-btns { display:flex; gap:8px; margin-bottom:20px; }
+  .period-btn {
+    padding:8px 20px;
+    border:1px solid var(--border);
+    border-radius:20px;
+    background:var(--glass);
+    color:var(--gray);
+    cursor:pointer;
+    font-weight:700;
+    font-family:'Rajdhani', sans-serif;
+    letter-spacing:1px;
+    transition:0.2s;
+  }
+  .period-btn.active { background:var(--blue-accent); border-color:var(--blue-accent); color:#fff; }
+
+  /* Empty state */
+  .empty-state {
+    text-align:center;
+    padding:40px;
+    color:var(--gray);
+  }
+
+  .empty-state .icon { font-size:3rem; margin-bottom:12px; }
+
+  /* Order type badge */
+  .order-type-select {
+    display:flex; gap:6px; margin-bottom:10px;
+  }
+
+  .type-btn {
+    flex:1; padding:8px;
+    border:1px solid var(--border);
+    border-radius:8px;
+    background:transparent;
+    color:var(--gray);
+    cursor:pointer;
+    font-size:0.8rem;
+    font-weight:700;
+    transition:0.2s;
+    font-family:'Rajdhani', sans-serif;
+  }
+
+  .type-btn.active { background:var(--blue-accent); border-color:var(--blue-accent); color:#fff; }
+
+  .badge {
+    display:inline-block;
+    padding:2px 8px;
+    border-radius:10px;
+    font-size:0.7rem;
+    font-weight:700;
+    font-family:'Rajdhani', sans-serif;
+  }
+
+  .badge-dine { background:rgba(30,111,217,0.3); color:var(--blue-light); }
+  .badge-takeaway { background:rgba(245,197,24,0.2); color:var(--gold); }
+  .badge-delivery { background:rgba(0,230,118,0.2); color:var(--success); }
+
+  .extra-charges-row {
+    display:flex; gap:8px; margin-bottom:10px;
+  }
+
+  .charge-field {
+    flex:1; display:flex; flex-direction:column; gap:4px;
+  }
+
+  .charge-field label {
+    font-size:0.68rem;
+    color:var(--gray);
+    font-weight:700;
+    letter-spacing:0.5px;
+    font-family:'Rajdhani',sans-serif;
+  }
+
+  .charge-field input {
+    width:100%;
+    padding:8px 10px;
+    background:rgba(5,13,26,0.6);
+    border:1px solid var(--border);
+    border-radius:8px;
+    color:var(--white);
+    font-size:0.85rem;
+    font-weight:700;
+    outline:none;
+    transition:0.2s;
+  }
+
+  .charge-field input:focus {
+    border-color:var(--blue-accent);
+    box-shadow:0 0 10px rgba(30,111,217,0.3);
+  }
+</style>
+</head>
+<body>
+
+<!-- TOP NAV -->
+<nav class="topnav">
+  <div class="brand">☕ CAFÉ LOS ANGELES</div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="showPage('pos')">🛒 POS</button>
+    <button class="nav-tab" onclick="showPage('calendar')">📅 Calendar</button>
+    <button class="nav-tab" onclick="showPage('reports')">📊 Reports</button>
+  </div>
+  <div style="display:flex;align-items:center;gap:12px;">
+    <div class="powered-tag">⚡ Powered by ASKI · 03195106689</div>
+    <div class="clock" id="clock">--:--:--</div>
+  </div>
+</nav>
+
+<!-- ===== POS PAGE ===== -->
+<div class="page active" id="page-pos">
+  <div class="pos-layout">
+
+    <!-- LEFT: Menu -->
+    <div class="menu-panel">
+      <div class="search-bar">
+        <input type="text" id="menu-search" placeholder="Search menu items..." oninput="filterMenu()">
+      </div>
+      <div class="category-tabs" id="cat-tabs"></div>
+      <div class="menu-grid" id="menu-grid"></div>
+    </div>
+
+    <!-- RIGHT: Order -->
+    <div class="order-panel">
+      <div class="order-header">
+        <h3>🧾 NEW ORDER <span id="order-num" style="color:var(--blue-light);font-size:0.75rem">#001</span></h3>
+        <div class="order-type-select" style="margin-top:10px;">
+          <button class="type-btn active" onclick="setOrderType(this,'Dine In')">🍽 Dine In</button>
+          <button class="type-btn" onclick="setOrderType(this,'Takeaway')">📦 Takeaway</button>
+          <button class="type-btn" onclick="setOrderType(this,'Delivery')">🛵 Delivery</button>
+        </div>
+        <div class="order-info">
+          <input type="text" id="customer-name" placeholder="Customer Name">
+          <input type="text" id="table-no" placeholder="Table #">
+        </div>
+      </div>
+      <div class="order-items" id="order-items">
+        <div class="empty-state">
+          <div class="icon">🍽️</div>
+          <p>Select items from the menu</p>
+        </div>
+      </div>
+      <div class="order-footer">
+        <div class="extra-charges-row">
+          <div class="charge-field">
+            <label>Discount (Rs)</label>
+            <input type="number" id="discount" placeholder="0" oninput="calcTotal()" min="0">
+          </div>
+          <div class="charge-field" id="delivery-charge-wrap">
+            <label>Delivery Charge</label>
+            <input type="number" id="delivery-charge" placeholder="0" oninput="calcTotal()" min="0">
+          </div>
+        </div>
+        <div class="totals">
+          <div class="total-row"><span>Subtotal:</span><span id="subtotal">Rs. 0</span></div>
+          <div class="total-row" id="disc-row" style="display:none"><span>Discount:</span><span id="disc-display" style="color:#ff6b6b">- Rs. 0</span></div>
+          <div class="total-row" id="del-row" style="display:none"><span>Delivery:</span><span id="del-display" style="color:#00e676">+ Rs. 0</span></div>
+          <div class="total-row grand"><span>TOTAL:</span><span id="grand-total">Rs. 0</span></div>
+        </div>
+        <div style="display:flex;gap:6px;margin-top:10px;">
+          <button class="btn btn-gold" style="flex:1;margin:0;font-size:1rem;" onclick="placeOrder()">🖨️ PRINT ORDER</button>
+          <button class="btn btn-danger" style="margin:0;padding:12px 14px;" onclick="clearOrder()" title="Clear">🗑️</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== CALENDAR PAGE ===== -->
+<div class="page" id="page-calendar">
+  <div class="cal-layout">
+    <div style="display:flex;flex-direction:column;gap:0;overflow:hidden;">
+      <div class="cal-panel" style="flex:1;display:flex;flex-direction:column;">
+        <div class="cal-nav">
+          <button onclick="changeMonth(-1)">‹</button>
+          <h3 id="cal-title">May 2026</h3>
+          <button onclick="changeMonth(1)">›</button>
+        </div>
+        <div style="flex:1;overflow:auto;">
+          <table class="cal-table">
+            <thead>
+              <tr>
+                <th>SUN</th><th>MON</th><th>TUE</th>
+                <th>WED</th><th>THU</th><th>FRI</th><th>SAT</th>
+              </tr>
+            </thead>
+            <tbody id="cal-body"></tbody>
+          </table>
+        </div>
+        <div class="cal-summary">
+          <div class="cal-summary-item">
+            <div class="cal-summary-val" id="month-orders">0</div>
+            <div class="cal-summary-label">TOTAL ORDERS</div>
+          </div>
+          <div class="cal-summary-item">
+            <div class="cal-summary-val" id="month-revenue" style="font-size:0.85rem;">Rs. 0</div>
+            <div class="cal-summary-label">MONTHLY REVENUE</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="day-detail" id="day-detail">
+      <div class="empty-state">
+        <div class="icon">📅</div>
+        <p>Kisi date pe click karo orders dekhne ke liye</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== REPORTS PAGE ===== -->
+<div class="page" id="page-reports">
+  <div class="period-btns">
+    <button class="period-btn active" onclick="showReport('daily',this)">Daily</button>
+    <button class="period-btn" onclick="showReport('monthly',this)">Monthly</button>
+    <button class="period-btn" onclick="showReport('yearly',this)">Yearly</button>
+  </div>
+  <div id="report-content"></div>
+</div>
+
+<!-- ===== MODAL ===== -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <h3 id="modal-title">ORDER SLIP</h3>
+    <div class="slip-preview" id="modal-body"></div>
+    <div class="modal-btns">
+      <button class="btn btn-primary" onclick="doPrint()">🖨️ PRINT</button>
+      <button class="btn btn-danger" onclick="closeModal()">✕ CLOSE</button>
+    </div>
+  </div>
+</div>
+
+<!-- SIZE MODAL -->
+<div class="modal-overlay" id="size-modal">
+  <div class="modal">
+    <h3 id="size-modal-title">SELECT SIZE</h3>
+    <p id="size-modal-item" style="color:var(--gray);margin-bottom:12px;"></p>
+    <div class="size-select">
+      <button class="size-btn active" id="size-half" onclick="selectSize('half')">Half</button>
+      <button class="size-btn" id="size-full" onclick="selectSize('full')">Full</button>
+    </div>
+    <div class="modal-btns" style="margin-top:14px;">
+      <button class="btn btn-primary" onclick="confirmSize()">ADD TO ORDER</button>
+      <button class="btn btn-danger" onclick="closeSizeModal()">CANCEL</button>
+    </div>
+  </div>
+</div>
+
+<!-- Hidden print area -->
+<div id="print-area"></div>
+
+<script>
+// =====================================================
+// MENU DATA — Complete Café Los Angeles Menu
+// =====================================================
+const MENU = [
+  // DESI KARAHI SPECIAL (Half/Full)
+  { id:1, name:'Los Angeles Special Karahi', cat:'Desi Karahi', half:1200, full:2100, hasHalf:true },
+  { id:2, name:'Chicken Karahi', cat:'Desi Karahi', half:1100, full:2000, hasHalf:true },
+  { id:3, name:'Chicken White Karahi', cat:'Desi Karahi', half:1250, full:2300, hasHalf:true },
+  { id:4, name:'Chicken Achari Karahi', cat:'Desi Karahi', half:1200, full:2100, hasHalf:true },
+  { id:5, name:'Chicken Makhni Karahi', cat:'Desi Karahi', half:1200, full:2000, hasHalf:true },
+  { id:6, name:'Chicken Sulemani Karahi', cat:'Desi Karahi', half:1250, full:2300, hasHalf:true },
+  { id:7, name:'Chicken Student Karahi (Wings)', cat:'Desi Karahi', half:750, full:1200, hasHalf:true },
+  { id:8, name:'Chicken Handi', cat:'Desi Karahi', half:1050, full:2000, hasHalf:true },
+  { id:9, name:'Chicken Ginger 1 Person', cat:'Desi Karahi', full:750, hasHalf:false },
+  { id:10, name:'Chicken Jalfrezi 1 Person', cat:'Desi Karahi', full:750, hasHalf:false },
+
+  // MUTTON KARAHI BONELESS
+  { id:11, name:'Shinwari Mutton Karahi', cat:'Mutton Karahi', half:1900, full:3600, hasHalf:true },
+  { id:12, name:'Mutton Karahi', cat:'Mutton Karahi', half:1850, full:3500, hasHalf:true },
+  { id:13, name:'Mutton Makhni Karahi', cat:'Mutton Karahi', half:1900, full:3500, hasHalf:true },
+  { id:14, name:'Mutton Achari Karahi', cat:'Mutton Karahi', half:1900, full:3600, hasHalf:true },
+
+  // BEEF KARAHI BONELESS
+  { id:15, name:'Beef Special Karahi', cat:'Beef Karahi', half:1400, full:2600, hasHalf:true },
+  { id:16, name:'Beef Spicy Karahi', cat:'Beef Karahi', half:1450, full:2650, hasHalf:true },
+  { id:17, name:'Beef Achari Karahi', cat:'Beef Karahi', half:1500, full:2800, hasHalf:true },
+
+  // CHINESE
+  { id:18, name:'LA Special Chicken With Rice', cat:'Chinese', full:990, hasHalf:false },
+  { id:19, name:'Chicken Chili Dry With Rice', cat:'Chinese', full:850, hasHalf:false },
+  { id:20, name:'Chicken Manchurian With Rice', cat:'Chinese', full:850, hasHalf:false },
+  { id:21, name:'Chicken Shaslick With Rice', cat:'Chinese', full:890, hasHalf:false },
+  { id:22, name:'Chicken Black Pepper With Rice', cat:'Chinese', full:950, hasHalf:false },
+  { id:23, name:'Chicken And Vegetable With Rice', cat:'Chinese', full:900, hasHalf:false },
+  { id:24, name:'Chicken Chilli Onion With Rice', cat:'Chinese', full:900, hasHalf:false },
+  { id:25, name:'Chicken Cashu Nut With Rice', cat:'Chinese', full:1050, hasHalf:false },
+
+  // RICE
+  { id:26, name:'Chicken Fried Rice', cat:'Rice', full:690, hasHalf:false },
+  { id:27, name:'Egg Fried Rice', cat:'Rice', full:650, hasHalf:false },
+  { id:28, name:'Vegetable Fried Rice', cat:'Rice', full:590, hasHalf:false },
+  { id:29, name:'Chicken & Vegetable Rice', cat:'Rice', full:600, hasHalf:false },
+  { id:30, name:'Spicy Fried Rice', cat:'Rice', full:650, hasHalf:false },
+
+  // NOODLES
+  { id:31, name:'LA Special Chowmein', cat:'Noodles', full:790, hasHalf:false },
+  { id:32, name:'Chicken Chowmein', cat:'Noodles', full:750, hasHalf:false },
+  { id:33, name:'Vegetable Chowmein', cat:'Noodles', full:650, hasHalf:false },
+  { id:34, name:'BBQ Chicken Speghti', cat:'Noodles', full:850, hasHalf:false },
+
+  // SHAKES
+  { id:35, name:'Mango Lover', cat:'Shakes', full:550, hasHalf:false },
+  { id:36, name:'Banana Lover', cat:'Shakes', full:550, hasHalf:false },
+  { id:37, name:'Strawberry Lover', cat:'Shakes', full:600, hasHalf:false },
+  { id:38, name:'Dates & Almond Shake', cat:'Shakes', full:600, hasHalf:false },
+  { id:39, name:'Oreo Shake', cat:'Shakes', full:550, hasHalf:false },
+
+  // FRESH JUICES
+  { id:40, name:'Apple Juice', cat:'Juices', full:450, hasHalf:false },
+  { id:41, name:'Peach Juice', cat:'Juices', full:450, hasHalf:false },
+  { id:42, name:'Orange Juice', cat:'Juices', full:420, hasHalf:false },
+  { id:43, name:'Mint Margarita', cat:'Juices', full:400, hasHalf:false },
+
+  // ICE CREAM SHAKES
+  { id:44, name:'Cold Coffee', cat:'Ice Cream Shakes', full:650, hasHalf:false },
+  { id:45, name:'Strawberry Ice Cream Shake', cat:'Ice Cream Shakes', full:600, hasHalf:false },
+  { id:46, name:'Mango Ice Cream Shake', cat:'Ice Cream Shakes', full:600, hasHalf:false },
+  { id:47, name:'Chocolate Ice Cream Shake', cat:'Ice Cream Shakes', full:650, hasHalf:false },
+  { id:48, name:'Vanilla Ice Cream Shake', cat:'Ice Cream Shakes', full:600, hasHalf:false },
+  { id:49, name:'Coconut Ice Cream Shake', cat:'Ice Cream Shakes', full:600, hasHalf:false },
+
+  // ICE CREAM
+  { id:50, name:'Strawberry Ice Cream (1 Scoop)', cat:'Ice Cream', full:150, hasHalf:false },
+  { id:51, name:'Strawberry Ice Cream (2 Scoops)', cat:'Ice Cream', full:250, hasHalf:false },
+  { id:52, name:'Mango Ice Cream (1 Scoop)', cat:'Ice Cream', full:150, hasHalf:false },
+  { id:53, name:'Mango Ice Cream (2 Scoops)', cat:'Ice Cream', full:250, hasHalf:false },
+  { id:54, name:'Vanilla Ice Cream (1 Scoop)', cat:'Ice Cream', full:150, hasHalf:false },
+  { id:55, name:'Vanilla Ice Cream (2 Scoops)', cat:'Ice Cream', full:250, hasHalf:false },
+  { id:56, name:'Coconut Ice Cream (1 Scoop)', cat:'Ice Cream', full:150, hasHalf:false },
+  { id:57, name:'Coconut Ice Cream (2 Scoops)', cat:'Ice Cream', full:250, hasHalf:false },
+  { id:58, name:'Chocolate Ice Cream (1 Scoop)', cat:'Ice Cream', full:150, hasHalf:false },
+  { id:59, name:'Chocolate Ice Cream (2 Scoops)', cat:'Ice Cream', full:250, hasHalf:false },
+
+  // RAITA / SALAD
+  { id:60, name:'Raita', cat:'Extras', full:150, hasHalf:false },
+  { id:61, name:'Salad', cat:'Extras', full:150, hasHalf:false },
+
+  // ROTI / NAAN
+  { id:62, name:'Roti', cat:'Bread', full:30, hasHalf:false },
+  { id:63, name:'Plain Naan', cat:'Bread', full:40, hasHalf:false },
+  { id:64, name:'Roghni Naan', cat:'Bread', full:60, hasHalf:false },
+  { id:65, name:'Garlic Naan', cat:'Bread', full:60, hasHalf:false },
+
+  // COLD BEVERAGES
+  { id:66, name:'Drink Regular', cat:'Beverages', full:100, hasHalf:false },
+  { id:67, name:'Drink 1 Liter', cat:'Beverages', full:180, hasHalf:false },
+  { id:68, name:'Drink 1.5 Liter', cat:'Beverages', full:220, hasHalf:false },
+  { id:69, name:'Water Small', cat:'Beverages', full:50, hasHalf:false },
+  { id:70, name:'Water Large', cat:'Beverages', full:100, hasHalf:false },
+];
+
+const CATS = ['All', ...new Set(MENU.map(m => m.cat))];
+
+// =====================================================
+// STATE
+// =====================================================
+let orderItems = [];
+let orderType = 'Dine In';
+let currentOrderNum = parseInt(localStorage.getItem('la_order_num') || '1');
+let allOrders = JSON.parse(localStorage.getItem('la_orders') || '[]');
+let calYear = new Date().getFullYear();
+let calMonth = new Date().getMonth();
+let selectedCat = 'All';
+let pendingItem = null;
+let pendingSize = 'full';
+
+// =====================================================
+// CLOCK
+// =====================================================
+function updateClock() {
+  const now = new Date();
+  document.getElementById('clock').textContent =
+    now.toLocaleTimeString('en-PK', {hour:'2-digit',minute:'2-digit',second:'2-digit'});
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+// =====================================================
+// PAGES
+// =====================================================
+function showPage(p) {
+  document.querySelectorAll('.page').forEach(x => x.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(x => x.classList.remove('active'));
+  document.getElementById('page-' + p).classList.add('active');
+  event.target.classList.add('active');
+  if(p === 'calendar') renderCalendar();
+  if(p === 'reports') showReport('daily', document.querySelector('.period-btn'));
+}
+
+// =====================================================
+// MENU RENDER
+// =====================================================
+function buildCatTabs() {
+  const cont = document.getElementById('cat-tabs');
+  cont.innerHTML = CATS.map(c =>
+    `<div class="cat-tab${c==='All'?' active':''}" onclick="setCat(this,'${c}')">${c}</div>`
+  ).join('');
+}
+
+function setCat(el, cat) {
+  document.querySelectorAll('.cat-tab').forEach(x=>x.classList.remove('active'));
+  el.classList.add('active');
+  selectedCat = cat;
+  renderMenu();
+}
+
+function filterMenu() {
+  renderMenu();
+}
+
+function renderMenu() {
+  const q = document.getElementById('menu-search').value.toLowerCase();
+  const items = MENU.filter(m =>
+    (selectedCat === 'All' || m.cat === selectedCat) &&
+    m.name.toLowerCase().includes(q)
+  );
+  const grid = document.getElementById('menu-grid');
+  if(!items.length) {
+    grid.innerHTML = '<div class="empty-state"><div class="icon">🔍</div><p>No items found</p></div>';
+    return;
+  }
+  grid.innerHTML = items.map(function(item) {
+    var halfHtml = item.hasHalf
+      ? '<span class="item-price-half">Half: Rs.' + item.half + '</span>'
+      : '';
+    var priceLabel = item.hasHalf ? 'Full: Rs.' + item.full : 'Rs.' + item.full;
+    return '<div class="menu-item" onclick="addItem(' + item.id + ')">' +
+      '<div class="item-left">' +
+        '<div class="item-name">' + item.name + '</div>' +
+        '<div class="item-cat">' + item.cat + '</div>' +
+      '</div>' +
+      '<div class="item-bottom-row">' +
+        '<div class="item-price-block">' +
+          '<div class="item-price">' + priceLabel + '</div>' +
+          halfHtml +
+        '</div>' +
+        '<div class="item-add-btn">+</div>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+// =====================================================
+// ORDER MANAGEMENT
+// =====================================================
+function addItem(id) {
+  const item = MENU.find(m => m.id === id);
+  if(item.hasHalf) {
+    pendingItem = item;
+    pendingSize = 'full';
+    document.getElementById('size-modal-title').textContent = item.name;
+    document.getElementById('size-modal-item').textContent =
+      `Half: Rs.${item.half}  |  Full: Rs.${item.full}`;
+    document.getElementById('size-half').classList.add('active');
+    document.getElementById('size-full').classList.remove('active');
+    document.getElementById('size-modal').classList.add('open');
+  } else {
+    pushItem(item, 'full');
+  }
+}
+
+function selectSize(s) {
+  pendingSize = s;
+  document.getElementById('size-half').classList.toggle('active', s==='half');
+  document.getElementById('size-full').classList.toggle('active', s==='full');
+}
+
+function confirmSize() {
+  if(pendingItem) {
+    pushItem(pendingItem, pendingSize);
+    pendingItem = null;
+    closeSizeModal();
+  }
+}
+
+function closeSizeModal() {
+  document.getElementById('size-modal').classList.remove('open');
+}
+
+function pushItem(item, size) {
+  const price = size === 'half' ? item.half : item.full;
+  const key = item.id + '-' + size;
+  const ex = orderItems.find(x => x.key === key);
+  if(ex) { ex.qty++; }
+  else {
+    orderItems.push({
+      key, id:item.id, name:item.name,
+      size: item.hasHalf ? (size === 'half' ? 'Half' : 'Full') : '',
+      price, qty:1
+    });
+  }
+  renderOrder();
+  showToast(`✓ ${item.name} added`);
+}
+
+function renderOrder() {
+  const cont = document.getElementById('order-items');
+  if(!orderItems.length) {
+    cont.innerHTML = '<div class="empty-state"><div class="icon">🍽️</div><p>Select items from the menu</p></div>';
+  } else {
+    cont.innerHTML = orderItems.map((oi, i) => `
+      <div class="order-row">
+        <div class="order-row-name">
+          ${oi.name}${oi.size ? ' <small style="color:var(--blue-light)">(${oi.size})</small>' : ''}
+        </div>
+        <div class="qty-ctrl">
+          <button class="qty-btn" onclick="changeQty(${i},-1)">−</button>
+          <span class="qty-val">${oi.qty}</span>
+          <button class="qty-btn" onclick="changeQty(${i},1)">+</button>
+        </div>
+        <div class="order-row-price">Rs.${(oi.price * oi.qty).toLocaleString()}</div>
+        <button class="del-btn" onclick="removeItem(${i})">✕</button>
+      </div>
+    `).join('').replace(/\${oi\.size}/g, '').replace(/\$\{oi\.size\}/g,'');
+    // Fix template literal issue in innerHTML
+    cont.querySelectorAll('.order-row-name').forEach((el, i) => {
+      const oi = orderItems[i];
+      el.innerHTML = `${oi.name}${oi.size ? ` <small style="color:var(--blue-light)">(${oi.size})</small>` : ''}`;
+    });
+  }
+  calcTotal();
+}
+
+function changeQty(i, d) {
+  orderItems[i].qty += d;
+  if(orderItems[i].qty <= 0) orderItems.splice(i, 1);
+  renderOrder();
+}
+
+function removeItem(i) {
+  orderItems.splice(i, 1);
+  renderOrder();
+}
+
+function getOrderValues() {
+  var sub = orderItems.reduce(function(s,x){ return s + x.price * x.qty; }, 0);
+  var disc = parseInt(document.getElementById('discount').value) || 0;
+  var del = parseInt(document.getElementById('delivery-charge').value) || 0;
+  var grand = Math.max(0, sub - disc + del);
+  return { sub: sub, disc: disc, del: del, grand: grand };
+}
+
+function calcTotal() {
+  var v = getOrderValues();
+  document.getElementById('subtotal').textContent = 'Rs. ' + v.sub.toLocaleString();
+  var discRow = document.getElementById('disc-row');
+  if(v.disc > 0) { discRow.style.display='flex'; document.getElementById('disc-display').textContent = '- Rs. ' + v.disc.toLocaleString(); }
+  else { discRow.style.display='none'; }
+  var delRow = document.getElementById('del-row');
+  if(v.del > 0) { delRow.style.display='flex'; document.getElementById('del-display').textContent = '+ Rs. ' + v.del.toLocaleString(); }
+  else { delRow.style.display='none'; }
+  document.getElementById('grand-total').textContent = 'Rs. ' + v.grand.toLocaleString();
+}
+
+function setOrderType(el, type) {
+  document.querySelectorAll('.type-btn').forEach(function(x){ x.classList.remove('active'); });
+  el.classList.add('active');
+  orderType = type;
+  // Show delivery charge field only for Delivery orders
+  var wrap = document.getElementById('delivery-charge-wrap');
+  if(type === 'Delivery') {
+    wrap.style.display = 'flex';
+  } else {
+    wrap.style.display = 'none';
+    document.getElementById('delivery-charge').value = '';
+    calcTotal();
+  }
+}
+
+function clearOrder() {
+  orderItems = [];
+  document.getElementById('customer-name').value = '';
+  document.getElementById('table-no').value = '';
+  document.getElementById('discount').value = '';
+  document.getElementById('delivery-charge').value = '';
+  renderOrder();
+}
+
+// =====================================================
+// SLIP GENERATION
+// =====================================================
+function generateSlipText(order) {
+  var w = 42;
+  var line = '━'.repeat(w);
+  var dline = '═'.repeat(w);
+  function center(t) {
+    if(t.length >= w) return t;
+    var pad = Math.floor((w - t.length) / 2);
+    return ' '.repeat(pad) + t;
+  }
+  var now = new Date(order.time);
+  var dateStr = now.toLocaleDateString('en-PK', {day:'2-digit', month:'short', year:'numeric'});
+  var timeStr = now.toLocaleTimeString('en-PK', {hour:'2-digit', minute:'2-digit'});
+
+  var slip = '';
+  slip += center('*** CAFE LOS ANGELES ***') + '\n';
+  slip += center('Royal Mall, Sector C') + '\n';
+  slip += center('Bahria Enclave, Islamabad') + '\n';
+  slip += center('Tel: 0327-5507006') + '\n';
+  slip += dline + '\n';
+  slip += ('Order#: ' + String(order.num).padStart(4,'0')).padEnd(22) + 'Date: ' + dateStr + '\n';
+  slip += ('Type : ' + order.orderType).padEnd(22) + 'Time: ' + timeStr + '\n';
+  if(order.customer) slip += 'Customer: ' + order.customer + '\n';
+  if(order.table) slip += 'Table   : ' + order.table + '\n';
+  slip += line + '\n';
+  slip += 'ITEM                    QTY       PRICE\n';
+  slip += line + '\n';
+  order.items.forEach(function(it) {
+    var name = (it.name + (it.size ? ' (' + it.size + ')' : '')).slice(0, 22);
+    var qty = String(it.qty).padStart(3);
+    var price = ('Rs.' + (it.price * it.qty).toLocaleString()).padStart(11);
+    slip += name.padEnd(24) + qty.padEnd(7) + price + '\n';
+  });
+  slip += line + '\n';
+  slip += 'Subtotal:'.padEnd(31) + ('Rs.' + order.sub.toLocaleString()).padStart(11) + '\n';
+  if(order.disc > 0)
+    slip += 'Discount (-):'.padEnd(31) + ('Rs.' + order.disc.toLocaleString()).padStart(11) + '\n';
+  if(order.del > 0)
+    slip += 'Delivery Charge (+):'.padEnd(31) + ('Rs.' + order.del.toLocaleString()).padStart(11) + '\n';
+  slip += dline + '\n';
+  slip += 'TOTAL BILL:'.padEnd(31) + ('Rs.' + order.grand.toLocaleString()).padStart(11) + '\n';
+  slip += dline + '\n';
+  slip += center('Thank you! Come Again :)') + '\n';
+  slip += center('Timing: 12PM to 1AM') + '\n';
+  slip += center('Free Home Delivery Available') + '\n';
+  return slip;
+}
+
+function buildOrderObject(num) {
+  var v = getOrderValues();
+  return {
+    num: num,
+    time: Date.now(),
+    orderType: orderType,
+    customer: document.getElementById('customer-name').value,
+    table: document.getElementById('table-no').value,
+    items: JSON.parse(JSON.stringify(orderItems)),
+    sub: v.sub, disc: v.disc, del: v.del,
+    subtotal: v.sub, discount: v.disc, deliveryCharge: v.del, grand: v.grand
+  };
+}
+
+function doPrintDirect(txt, orderNum) {
+  var win = window.open('', '_blank', 'width=320,height=650');
+  if(!win) { showToast('⚠️ Pop-up blocked! Allow pop-ups to print.'); return; }
+  win.document.write(
+    '<html><head><title>Order #' + String(orderNum).padStart(3,'0') + '</title>' +
+    '<style>' +
+    '@page{size:80mm auto;margin:2mm 2mm 4mm 2mm;}' +
+    'body{font-family:"Courier New",Courier,monospace;font-size:13pt;line-height:1.4;white-space:pre;width:76mm;margin:0;padding:0;background:#fff;color:#000;font-weight:bold;}' +
+    '@media print{*{-webkit-print-color-adjust:exact;print-color-adjust:exact;}body{margin:0;padding:0;}}' +
+    '</style></head>' +
+    '<body>' + txt + '</body>' +
+    '<scr' + 'ipt>window.onload=function(){window.print();setTimeout(function(){window.close();},800);};<\/scr' + 'ipt>' +
+    '</html>'
+  );
+  win.document.close();
+}
+
+function placeOrder() {
+  if(!orderItems.length) { showToast('⚠️ Koi item select nahi kiya!'); return; }
+  var order = buildOrderObject(currentOrderNum);
+
+  // Save to storage
+  allOrders.push(order);
+  localStorage.setItem('la_orders', JSON.stringify(allOrders));
+  currentOrderNum++;
+  localStorage.setItem('la_order_num', currentOrderNum);
+  document.getElementById('order-num').textContent = '#' + String(currentOrderNum).padStart(3,'0');
+
+  showToast('✅ Order #' + String(order.num).padStart(3,'0') + ' Place ho gaya!');
+
+  // AUTO PRINT immediately
+  var txt = generateSlipText(order);
+  doPrintDirect(txt, order.num);
+
+  clearOrder();
+}
+
+function printSlip() {
+  if(!orderItems.length) { showToast('⚠️ Koi item nahi hai!'); return; }
+  var order = buildOrderObject(currentOrderNum);
+  var txt = generateSlipText(order);
+  document.getElementById('modal-title').textContent = 'ORDER SLIP #' + String(order.num).padStart(3,'0');
+  document.getElementById('modal-body').textContent = txt;
+  document.getElementById('modal').classList.add('open');
+}
+
+function doPrint() {
+  var txt = document.getElementById('modal-body').textContent;
+  var titleEl = document.getElementById('modal-title').textContent;
+  var numMatch = titleEl.match(/#(\d+)/);
+  var num = numMatch ? parseInt(numMatch[1]) : 0;
+  doPrintDirect(txt, num);
+}
+
+function closeModal() {
+  document.getElementById('modal').classList.remove('open');
+}
+
+// =====================================================
+// CALENDAR
+// =====================================================
+const MONTHS = ['January','February','March','April','May','June',
+  'July','August','September','October','November','December'];
+const DAYS_SHORT = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+
+function renderCalendar() {
+  document.getElementById('cal-title').textContent = MONTHS[calMonth] + ' ' + calYear;
+  var first = new Date(calYear, calMonth, 1).getDay();
+  var days = new Date(calYear, calMonth + 1, 0).getDate();
+  var today = new Date();
+
+  // Monthly stats
+  var monthOrders = allOrders.filter(function(o) {
+    var d = new Date(o.time);
+    return d.getFullYear() === calYear && d.getMonth() === calMonth;
+  });
+  document.getElementById('month-orders').textContent = monthOrders.length;
+  document.getElementById('month-revenue').textContent =
+    'Rs. ' + monthOrders.reduce(function(s,o){ return s+o.grand; }, 0).toLocaleString();
+
+  // Build day→orders map
+  var dayMap = {};
+  monthOrders.forEach(function(o) {
+    var d = new Date(o.time).getDate();
+    if(!dayMap[d]) dayMap[d] = [];
+    dayMap[d].push(o);
+  });
+
+  var tbody = document.getElementById('cal-body');
+  var html = '';
+  var cell = 0;
+  var row = '<tr>';
+
+  // Empty cells before first day
+  for(var i = 0; i < first; i++) {
+    row += '<td class="cal-empty"></td>';
+    cell++;
+  }
+
+  for(var d = 1; d <= days; d++) {
+    var isToday = d === today.getDate() && calMonth === today.getMonth() && calYear === today.getFullYear();
+    var hasSales = dayMap[d] && dayMap[d].length > 0;
+    var rev = hasSales ? dayMap[d].reduce(function(s,o){ return s+o.grand; }, 0) : 0;
+    var cnt = hasSales ? dayMap[d].length : 0;
+
+    var cls = 'class="' + (isToday ? 'cal-today' : '') + '"';
+    row += '<td ' + cls + ' onclick="showDayOrders(' + d + ')" id="calday-' + d + '">';
+    row += '<div class="cal-day-num">' + d + '</div>';
+    if(hasSales) {
+      row += '<div class="cal-day-sales"><span class="cal-day-dot"></span>' + cnt + ' | Rs.' + rev.toLocaleString() + '</div>';
+    }
+    row += '</td>';
+    cell++;
+
+    if(cell % 7 === 0) {
+      row += '</tr>';
+      html += row;
+      row = '<tr>';
+    }
+  }
+
+  // Fill remaining cells
+  if(cell % 7 !== 0) {
+    while(cell % 7 !== 0) {
+      row += '<td class="cal-empty"></td>';
+      cell++;
+    }
+    row += '</tr>';
+    html += row;
+  }
+
+  tbody.innerHTML = html;
+}
+
+function changeMonth(d) {
+  calMonth += d;
+  if(calMonth > 11) { calMonth = 0; calYear++; }
+  if(calMonth < 0) { calMonth = 11; calYear--; }
+  renderCalendar();
+}
+
+function showDayOrders(day) {
+  // Remove previous selected
+  document.querySelectorAll('#cal-body td').forEach(function(el) {
+    el.classList.remove('cal-selected');
+  });
+  var cell = document.getElementById('calday-' + day);
+  if(cell) cell.classList.add('cal-selected');
+
+  var target = new Date(calYear, calMonth, day);
+  var dayOrders = allOrders.filter(function(o) {
+    var d = new Date(o.time);
+    return d.getFullYear() === calYear && d.getMonth() === calMonth && d.getDate() === day;
+  });
+
+  var detail = document.getElementById('day-detail');
+  var dateStr = target.toLocaleDateString('en-PK', {weekday:'long', day:'numeric', month:'long', year:'numeric'});
+  var dayTotal = dayOrders.reduce(function(s,o){ return s+o.grand; }, 0);
+
+  var html = '<h2>📅 ' + dateStr + '</h2>';
+  html += '<div style="display:flex;gap:12px;margin-bottom:16px;">';
+  html += '<div class="stat-card" style="flex:1;padding:12px;"><div class="stat-val">' + dayOrders.length + '</div><div class="stat-label">ORDERS</div></div>';
+  html += '<div class="stat-card" style="flex:1;padding:12px;"><div class="stat-val" style="font-size:0.95rem;">Rs.' + dayTotal.toLocaleString() + '</div><div class="stat-label">REVENUE</div></div>';
+  html += '</div>';
+
+  if(dayOrders.length === 0) {
+    html += '<div class="empty-state"><div class="icon">📭</div><p>Is din koi order nahi</p></div>';
+  } else {
+    dayOrders.forEach(function(o) {
+      var timeStr = new Date(o.time).toLocaleTimeString('en-PK', {hour:'2-digit', minute:'2-digit'});
+      html += '<div class="slip-card">';
+      html += '<div class="slip-card-header">';
+      html += '<span class="slip-no">Order #' + String(o.num).padStart(3,'0') + '</span>';
+      html += '<span class="slip-total">Rs.' + o.grand.toLocaleString() + '</span>';
+      html += '</div>';
+      html += '<div style="font-size:0.75rem;color:var(--gray);margin-bottom:6px;">' + timeStr + ' • ' + o.orderType + (o.customer ? ' • '+o.customer : '') + '</div>';
+      html += '<div style="font-size:0.78rem;color:var(--blue-pale);margin-bottom:8px;">';
+      o.items.forEach(function(it, idx) {
+        html += (idx>0?'  |  ':'') + it.name + (it.size?' ('+it.size+')':'') + ' ×' + it.qty;
+      });
+      html += '</div>';
+      html += '<button onclick="reprintOrder(' + o.num + ')" style="padding:5px 14px;background:var(--blue-accent);border:none;border-radius:6px;color:#fff;cursor:pointer;font-size:0.75rem;font-weight:700;font-family:Rajdhani,sans-serif;">🖨️ REPRINT</button>';
+      html += '</div>';
+    });
+  }
+
+  detail.innerHTML = html;
+}
+
+function showOrderSlip(num) {
+  const o = allOrders.find(x => x.num === num);
+  if(!o) return;
+  const txt = generateSlipText(o);
+  document.getElementById('modal-title').textContent = 'ORDER #' + String(o.num).padStart(3,'0');
+  document.getElementById('modal-body').textContent = txt;
+  document.getElementById('modal').classList.add('open');
+}
+
+function reprintOrder(num) {
+  showOrderSlip(num);
+}
+
+// =====================================================
+// REPORTS
+// =====================================================
+function showReport(period, el) {
+  document.querySelectorAll('.period-btn').forEach(x=>x.classList.remove('active'));
+  if(el) el.classList.add('active');
+
+  const now = new Date();
+  let orders = [];
+  let title = '';
+
+  if(period === 'daily') {
+    orders = allOrders.filter(o => {
+      const d = new Date(o.time);
+      return d.toDateString() === now.toDateString();
+    });
+    title = `TODAY — ${now.toLocaleDateString('en-PK',{weekday:'long',day:'numeric',month:'long',year:'numeric'})}`;
+  } else if(period === 'monthly') {
+    orders = allOrders.filter(o => {
+      const d = new Date(o.time);
+      return d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth();
+    });
+    title = `${MONTHS[now.getMonth()]} ${now.getFullYear()}`;
+  } else {
+    orders = allOrders.filter(o => new Date(o.time).getFullYear() === now.getFullYear());
+    title = `YEAR ${now.getFullYear()}`;
+  }
+
+  const total = orders.reduce((s,o) => s+o.grand, 0);
+  const avgOrder = orders.length ? Math.round(total / orders.length) : 0;
+
+  // Item breakdown
+  const itemMap = {};
+  orders.forEach(o => {
+    o.items.forEach(it => {
+      const k = it.name + (it.size ? ` (${it.size})` : '');
+      if(!itemMap[k]) itemMap[k] = { qty:0, rev:0 };
+      itemMap[k].qty += it.qty;
+      itemMap[k].rev += it.price * it.qty;
+    });
+  });
+
+  const topItems = Object.entries(itemMap)
+    .sort((a,b) => b[1].rev - a[1].rev)
+    .slice(0, 10);
+
+  const cont = document.getElementById('report-content');
+  cont.innerHTML = `
+    <div style="margin-bottom:16px;font-family:'Orbitron',monospace;font-size:0.85rem;color:var(--blue-light);letter-spacing:2px;">${title}</div>
+    <div class="reports-grid">
+      <div class="stat-card">
+        <div class="stat-icon">🧾</div>
+        <div class="stat-val">${orders.length}</div>
+        <div class="stat-label">TOTAL ORDERS</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">💰</div>
+        <div class="stat-val" style="font-size:1rem;">Rs.${total.toLocaleString()}</div>
+        <div class="stat-label">TOTAL REVENUE</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">📊</div>
+        <div class="stat-val" style="font-size:1rem;">Rs.${avgOrder.toLocaleString()}</div>
+        <div class="stat-label">AVG ORDER VALUE</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">🏆</div>
+        <div class="stat-val" style="font-size:0.9rem;">${topItems[0]?topItems[0][0].slice(0,15)+'…':'—'}</div>
+        <div class="stat-label">TOP SELLER</div>
+      </div>
+    </div>
+
+    ${topItems.length ? `
+    <div class="table-wrap">
+      <div class="table-header"><h3>🔥 TOP SELLING ITEMS</h3></div>
+      <table>
+        <thead><tr>
+          <th>#</th><th>ITEM</th><th>QTY SOLD</th><th>REVENUE</th>
+        </tr></thead>
+        <tbody>
+          ${topItems.map(([name, d], i) => `
+            <tr>
+              <td style="color:var(--gold);font-weight:700;">${i+1}</td>
+              <td>${name}</td>
+              <td><span style="color:var(--blue-light);font-weight:700;">${d.qty}</span></td>
+              <td style="color:var(--gold);font-family:'Orbitron',monospace;font-size:0.8rem;">Rs.${d.rev.toLocaleString()}</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    </div>
+    ` : ''}
+
+    <div class="table-wrap">
+      <div class="table-header"><h3>📋 ALL ORDERS</h3></div>
+      ${orders.length ? `
+      <table>
+        <thead><tr>
+          <th>ORDER #</th><th>DATE/TIME</th><th>TYPE</th><th>CUSTOMER</th><th>ITEMS</th><th>TOTAL</th><th>ACTION</th>
+        </tr></thead>
+        <tbody>
+          ${[...orders].reverse().map(o => `
+            <tr>
+              <td style="font-family:'Orbitron',monospace;color:var(--blue-light);">#${String(o.num).padStart(3,'0')}</td>
+              <td style="font-size:0.75rem;">${new Date(o.time).toLocaleString('en-PK',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'})}</td>
+              <td><span class="badge ${o.orderType==='Dine In'?'badge-dine':o.orderType==='Takeaway'?'badge-takeaway':'badge-delivery'}">${o.orderType}</span></td>
+              <td style="font-size:0.8rem;">${o.customer||'—'}</td>
+              <td style="font-size:0.75rem;color:var(--gray);">${o.items.length} items</td>
+              <td style="color:var(--gold);font-family:'Orbitron',monospace;font-size:0.8rem;">Rs.${o.grand.toLocaleString()}</td>
+              <td><button onclick="showOrderSlip(${o.num})" style="padding:4px 10px;background:var(--blue-accent);border:none;border-radius:6px;color:#fff;cursor:pointer;font-size:0.75rem;font-weight:700;">🖨️</button></td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+      ` : '<div class="empty-state"><div class="icon">📭</div><p>No orders yet</p></div>'}
+    </div>
+  `;
+}
+
+// =====================================================
+// TOAST
+// =====================================================
+function showToast(msg) {
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 2900);
+}
+
+// =====================================================
+// INIT
+// =====================================================
+buildCatTabs();
+renderMenu();
+document.getElementById('order-num').textContent = '#' + String(currentOrderNum).padStart(3,'0');
+document.getElementById('delivery-charge-wrap').style.display = 'none';
+</script>
+</body>
+</html>
