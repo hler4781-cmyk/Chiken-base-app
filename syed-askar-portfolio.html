@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Syed Askar — Web Developer</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --ink: #0d0d0d;
+    --paper: #f5f0e8;
+    --gold: #c8a84b;
+    --rust: #b84c2b;
+    --cream: #ede8dc;
+    --muted: #7a7060;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    overflow-x: hidden;
+  }
+
+  /* NOISE TEXTURE */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 999;
+    opacity: 0.5;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 4rem;
+    z-index: 100;
+    mix-blend-mode: multiply;
+  }
+
+  .nav-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    color: var(--ink);
+    text-decoration: none;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 2.5rem;
+    list-style: none;
+  }
+
+  .nav-links a {
+    text-decoration: none;
+    color: var(--muted);
+    font-size: 0.85rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    transition: color 0.3s;
+  }
+
+  .nav-links a:hover { color: var(--rust); }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    padding: 0 4rem;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero::after {
+    content: 'SA';
+    position: absolute;
+    right: -2rem;
+    top: 50%;
+    transform: translateY(-50%);
+    font-family: 'Playfair Display', serif;
+    font-size: 30vw;
+    font-weight: 900;
+    color: var(--cream);
+    line-height: 1;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 1;
+    padding-top: 6rem;
+  }
+
+  .hero-tag {
+    display: inline-block;
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--rust);
+    border: 1px solid var(--rust);
+    padding: 0.3rem 0.8rem;
+    margin-bottom: 2rem;
+    animation: fadeUp 0.8s ease forwards;
+    opacity: 0;
+  }
+
+  .hero-name {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(3rem, 6vw, 5.5rem);
+    font-weight: 900;
+    line-height: 1.05;
+    margin-bottom: 1.5rem;
+    animation: fadeUp 0.8s 0.2s ease forwards;
+    opacity: 0;
+  }
+
+  .hero-name span { color: var(--gold); }
+
+  .hero-desc {
+    font-size: 1.05rem;
+    color: var(--muted);
+    line-height: 1.8;
+    max-width: 420px;
+    margin-bottom: 3rem;
+    animation: fadeUp 0.8s 0.4s ease forwards;
+    opacity: 0;
+  }
+
+  .hero-cta {
+    display: flex;
+    gap: 1rem;
+    animation: fadeUp 0.8s 0.6s ease forwards;
+    opacity: 0;
+  }
+
+  .btn-primary {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 0.9rem 2rem;
+    text-decoration: none;
+    font-size: 0.85rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    transition: background 0.3s, transform 0.2s;
+    display: inline-block;
+  }
+
+  .btn-primary:hover { background: var(--rust); transform: translateY(-2px); }
+
+  .btn-outline {
+    border: 1.5px solid var(--ink);
+    color: var(--ink);
+    padding: 0.9rem 2rem;
+    text-decoration: none;
+    font-size: 0.85rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    transition: all 0.3s;
+    display: inline-block;
+  }
+
+  .btn-outline:hover { background: var(--ink); color: var(--paper); }
+
+  .hero-visual {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .hero-card {
+    width: 320px;
+    height: 400px;
+    background: var(--ink);
+    position: relative;
+    overflow: hidden;
+    animation: fadeIn 1s 0.5s ease forwards;
+    opacity: 0;
+  }
+
+  .hero-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, var(--gold) 0%, var(--rust) 100%);
+    opacity: 0.15;
+  }
+
+  .hero-card-inner {
+    position: absolute;
+    bottom: 2rem;
+    left: 2rem;
+    right: 2rem;
+  }
+
+  .hero-card-inner h3 {
+    font-family: 'Playfair Display', serif;
+    color: var(--paper);
+    font-size: 1.8rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .hero-card-inner p {
+    color: var(--gold);
+    font-size: 0.8rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+
+  .hero-card-decoration {
+    position: absolute;
+    top: 2rem;
+    right: 2rem;
+    width: 60px;
+    height: 60px;
+    border: 1px solid rgba(200,168,75,0.4);
+    border-radius: 50%;
+  }
+
+  .hero-card-decoration::after {
+    content: '';
+    position: absolute;
+    top: 8px; left: 8px; right: 8px; bottom: 8px;
+    border: 1px solid rgba(200,168,75,0.2);
+    border-radius: 50%;
+  }
+
+  /* SECTION COMMON */
+  section { padding: 7rem 4rem; }
+
+  .section-label {
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--rust);
+    margin-bottom: 1rem;
+  }
+
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 4vw, 3.5rem);
+    font-weight: 700;
+    line-height: 1.15;
+    margin-bottom: 3rem;
+  }
+
+  /* ABOUT */
+  .about {
+    background: var(--cream);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6rem;
+    align-items: center;
+  }
+
+  .about-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-top: 2rem;
+  }
+
+  .stat-box {
+    border-top: 2px solid var(--gold);
+    padding-top: 1rem;
+  }
+
+  .stat-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.5rem;
+    font-weight: 900;
+    color: var(--ink);
+  }
+
+  .stat-label {
+    font-size: 0.8rem;
+    color: var(--muted);
+    letter-spacing: 0.05em;
+  }
+
+  .about-text p {
+    color: var(--muted);
+    line-height: 1.9;
+    margin-bottom: 1.2rem;
+  }
+
+  /* SKILLS */
+  .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    margin-top: 1rem;
+  }
+
+  .skill-card {
+    background: var(--cream);
+    padding: 2rem;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.3s;
+    cursor: default;
+  }
+
+  .skill-card:hover { transform: translateY(-4px); }
+
+  .skill-card::before {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0;
+    height: 3px;
+    width: 0;
+    background: var(--gold);
+    transition: width 0.4s;
+  }
+
+  .skill-card:hover::before { width: 100%; }
+
+  .skill-icon {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+  }
+
+  .skill-card h4 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .skill-card p {
+    font-size: 0.82rem;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  /* PROJECTS */
+  .projects { background: var(--ink); }
+
+  .projects .section-label { color: var(--gold); }
+  .projects .section-title { color: var(--paper); }
+
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
+  }
+
+  .project-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    padding: 2.5rem;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.3s, transform 0.3s;
+  }
+
+  .project-card:hover {
+    border-color: var(--gold);
+    transform: translateY(-4px);
+  }
+
+  .project-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 3rem;
+    font-weight: 900;
+    color: rgba(255,255,255,0.06);
+    position: absolute;
+    top: 1rem;
+    right: 1.5rem;
+    line-height: 1;
+  }
+
+  .project-tag {
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 1rem;
+    display: block;
+  }
+
+  .project-card h3 {
+    font-family: 'Playfair Display', serif;
+    color: var(--paper);
+    font-size: 1.4rem;
+    margin-bottom: 1rem;
+  }
+
+  .project-card p {
+    color: rgba(245,240,232,0.5);
+    font-size: 0.88rem;
+    line-height: 1.7;
+    margin-bottom: 1.5rem;
+  }
+
+  .projects-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  .project-badge {
+    display: inline-block;
+    font-size: 0.65rem;
+    padding: 0.2rem 0.5rem;
+    border-radius: 20px;
+    margin-bottom: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .badge-pos { background: #1e6fd9; color: #fff; }
+  .badge-cart { background: #27ae60; color: #fff; }
+  .badge-urdu { background: #c8a84b; color: #111; }
+  .badge-luxury { background: #9b0d22; color: #fff; }
+
+  .project-tech {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .tech-pill {
+    font-size: 0.72rem;
+    padding: 0.25rem 0.7rem;
+    border: 1px solid rgba(200,168,75,0.3);
+    color: var(--gold);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  /* CONTACT */
+  .contact {
+    background: var(--cream);
+    text-align: center;
+  }
+
+  .contact .section-title { margin-bottom: 1rem; }
+
+  .contact-sub {
+    color: var(--muted);
+    font-size: 1rem;
+    margin-bottom: 3rem;
+  }
+
+  .contact-links {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+  }
+
+  .contact-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--ink);
+    text-decoration: none;
+    font-size: 0.9rem;
+    padding: 0.8rem 1.5rem;
+    border: 1.5px solid var(--ink);
+    transition: all 0.3s;
+  }
+
+  .contact-item:hover {
+    background: var(--ink);
+    color: var(--paper);
+  }
+
+  /* FOOTER */
+  footer {
+    background: var(--ink);
+    color: rgba(245,240,232,0.4);
+    text-align: center;
+    padding: 2rem;
+    font-size: 0.8rem;
+    letter-spacing: 0.08em;
+  }
+
+  footer span { color: var(--gold); }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  /* SCROLL REVEAL */
+  .reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 900px) {
+    nav { padding: 1.2rem 2rem; }
+    .hero { grid-template-columns: 1fr; padding: 0 2rem; padding-top: 6rem; }
+    .hero-visual { display: none; }
+    .hero::after { font-size: 40vw; right: -1rem; opacity: 0.5; }
+    section { padding: 5rem 2rem; }
+    .about { grid-template-columns: 1fr; gap: 3rem; }
+    .skills-grid { grid-template-columns: 1fr 1fr; }
+    .projects-grid { grid-template-columns: 1fr; }
+    .nav-links { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo">Syed Askar</a>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="home">
+  <div class="hero-content">
+    <span class="hero-tag">Available for Work</span>
+    <h1 class="hero-name">Syed<br><span>Askar</span></h1>
+    <p class="hero-desc">
+      Web Developer based in Pakistan. I build clean, fast, and beautiful websites that help businesses grow online.
+    </p>
+    <div class="hero-cta">
+      <a href="#projects" class="btn-primary">View My Work</a>
+      <a href="#contact" class="btn-outline">Hire Me</a>
+    </div>
+  </div>
+  <div class="hero-visual">
+    <div class="hero-card">
+      <div class="hero-card-decoration"></div>
+      <div class="hero-card-inner">
+        <h3>Syed Askar</h3>
+        <p>Web Developer · Pakistan</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section class="about" id="about">
+  <div class="reveal">
+    <p class="section-label">Who I Am</p>
+    <h2 class="section-title">Passionate Developer,<br>Problem Solver</h2>
+    <div class="about-stats">
+      <div class="stat-box">
+        <div class="stat-num">8</div>
+        <div class="stat-label">Projects Completed</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num">3</div>
+        <div class="stat-label">App Types Built</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num">2</div>
+        <div class="stat-label">Languages (EN+UR)</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num">1</div>
+        <div class="stat-label">Full POS System</div>
+      </div>
+    </div>
+  </div>
+  <div class="reveal">
+    <p>I am Syed Askar, a passionate web developer from Pakistan. I have built <strong>8 real-world projects</strong> — ranging from restaurant websites to full Point-of-Sale systems.</p>
+    <p>I specialize in building web apps in <strong>both English and Urdu</strong>. I have successfully delivered complex features including cart systems, admin panels, and complete POS software.</p>
+    <p>I am actively looking for <strong>job opportunities and freelance projects</strong>. Need a website for your restaurant, cafe, or business? I am ready to help! 🚀</p>
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section id="skills">
+  <p class="section-label reveal">What I Know</p>
+  <h2 class="section-title reveal">My Skills</h2>
+  <div class="skills-grid">
+    <div class="skill-card reveal">
+      <div class="skill-icon">🌐</div>
+      <h4>HTML & CSS</h4>
+      <p>Building the structure and design of websites. Responsive layouts that look great on both mobile and desktop.</p>
+    </div>
+    <div class="skill-card reveal">
+      <div class="skill-icon">⚡</div>
+      <h4>JavaScript</h4>
+      <p>Cart systems, POS software, admin panels, and interactive features — all built with JavaScript.</p>
+    </div>
+    <div class="skill-card reveal">
+      <div class="skill-icon">🖥️</div>
+      <h4>POS Systems</h4>
+      <p>Building full Point-of-Sale software — order management, billing, receipts, and menu control.</p>
+    </div>
+    <div class="skill-card reveal">
+      <div class="skill-icon">🛒</div>
+      <h4>Cart & Orders</h4>
+      <p>Online ordering systems — add to cart, quantity control, live totals, and smooth checkout flow.</p>
+    </div>
+    <div class="skill-card reveal">
+      <div class="skill-icon">🇵🇰</div>
+      <h4>Urdu (RTL) Apps</h4>
+      <p>Building complete web apps in Urdu — right-to-left layout, Nastaliq fonts, and Pakistani themes.</p>
+    </div>
+    <div class="skill-card reveal">
+      <div class="skill-icon">📱</div>
+      <h4>Responsive Design</h4>
+      <p>Websites that work perfectly on every screen size — from mobile phones to large desktops.</p>
+    </div>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section class="projects" id="projects">
+  <p class="section-label reveal">My Work</p>
+  <h2 class="section-title reveal">Recent Projects</h2>
+  <div class="projects-grid">
+
+    <div class="project-card reveal">
+      <span class="project-num">01</span>
+      <span class="project-badge badge-pos">🖥️ POS System</span>
+      <h3>Café Los Angeles</h3>
+      <p>Full Point-of-Sale system — menu management, live order tracking, billing, and receipt generation. A complete restaurant management software!</p>
+      <div class="project-tech">
+        <span class="tech-pill">HTML</span>
+        <span class="tech-pill">CSS</span>
+        <span class="tech-pill">JavaScript</span>
+        <span class="tech-pill">POS</span>
+      </div>
+    </div>
+
+    <div class="project-card reveal">
+      <span class="project-num">02</span>
+      <span class="project-badge badge-luxury">🏖️ Luxury</span>
+      <h3>Monaco Bay</h3>
+      <p>A premium website for a high-end dining restaurant — navy & gold theme, animated hero section, promo banners, and online ordering.</p>
+      <div class="project-tech">
+        <span class="tech-pill">HTML</span>
+        <span class="tech-pill">CSS</span>
+        <span class="tech-pill">JavaScript</span>
+        <span class="tech-pill">Animations</span>
+      </div>
+    </div>
+
+    <div class="project-card reveal">
+      <span class="project-num">03</span>
+      <span class="project-badge badge-cart">🍗 Order App</span>
+      <h3>Chicken Base</h3>
+      <p>Online food ordering app with a full cart system, delivery time display, and item quantity control. Bold green & yellow theme.</p>
+      <div class="project-tech">
+        <span class="tech-pill">HTML</span>
+        <span class="tech-pill">CSS</span>
+        <span class="tech-pill">JavaScript</span>
+        <span class="tech-pill">Cart System</span>
+      </div>
+    </div>
+
+    <div class="project-card reveal">
+      <span class="project-num">04</span>
+      <span class="project-badge badge-cart">🔥 Order App</span>
+      <h3>Grill & Flame</h3>
+      <p>Online ordering app for a restaurant in Wah Cantt — fast delivery info, live cart total updates, and a premium red & gold design.</p>
+      <div class="project-tech">
+        <span class="tech-pill">HTML</span>
+        <span class="tech-pill">CSS</span>
+        <span class="tech-pill">JavaScript</span>
+        <span class="tech-pill">Cart System</span>
+      </div>
+    </div>
+
+    <div class="project-card reveal">
+      <span class="project-num">05</span>
+      <span class="project-badge badge-cart">🧀 Order App</span>
+      <h3>Cheese Square</h3>
+      <p>A cheese-themed restaurant app with size selection, a full cart system, and bold yellow & red design. A unique and fun user experience.</p>
+      <div class="project-tech">
+        <span class="tech-pill">HTML</span>
+        <span class="tech-pill">CSS</span>
+        <span class="tech-pill">JavaScript</span>
+        <span class="tech-pill">Size Selector</span>
+      </div>
+    </div>
+
+    <div class="project-card reveal">
+      <span class="project-num">06</span>
+      <span class="project-badge badge-cart">🍽️ Restaurant</span>
+      <h3>Margalla Bites</h3>
+      <p>A full restaurant website for an Islamabad eatery — hero section, menu browsing, floating cart button, and an elegant dark gold theme.</p>
+      <div class="project-tech">
+        <span class="tech-pill">HTML</span>
+        <span class="tech-pill">CSS</span>
+        <span class="tech-pill">JavaScript</span>
+        <span class="tech-pill">Floating Cart</span>
+      </div>
+    </div>
+
+    <div class="project-card reveal">
+      <span class="project-num">07</span>
+      <span class="project-badge badge-urdu">🇵🇰 Urdu</span>
+      <h3>Punjab Food — پنجاب فوڈ</h3>
+      <p>A complete Urdu-language menu app with a saffron and deep red Pakistani theme. The perfect solution for local restaurants serving Urdu-speaking customers.</p>
+      <div class="project-tech">
+        <span class="tech-pill">HTML</span>
+        <span class="tech-pill">CSS</span>
+        <span class="tech-pill">JavaScript</span>
+        <span class="tech-pill">Urdu RTL</span>
+      </div>
+    </div>
+
+    <div class="project-card reveal">
+      <span class="project-num">08</span>
+      <span class="project-badge badge-urdu">🇵🇰 Urdu + Admin</span>
+      <h3>Quetta Karachi Cafe — کوئٹہ کراچی کیفے</h3>
+      <p>A full Urdu cafe app with a chai & paratha menu, cart system, and a dedicated Admin Panel. Features animated dark red & gold Pakistani design.</p>
+      <div class="project-tech">
+        <span class="tech-pill">HTML</span>
+        <span class="tech-pill">CSS</span>
+        <span class="tech-pill">JavaScript</span>
+        <span class="tech-pill">Admin Panel</span>
+        <span class="tech-pill">Urdu RTL</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="contact" id="contact">
+  <p class="section-label reveal">Get In Touch</p>
+  <h2 class="section-title reveal">Let's Work Together</h2>
+  <p class="contact-sub reveal">Need a website built? Or looking to hire a dedicated developer? Let's connect and make something great together!</p>
+  <div class="contact-links reveal">
+    <a href="mailto:hler4781@gmail.com" class="contact-item">
+      📧 hler4781@gmail.com
+    </a>
+    <a href="https://github.com/hler4781-cmyk" target="_blank" class="contact-item">
+      💻 GitHub
+    </a>
+    <a href="https://linkedin.com/in/syedaskar" target="_blank" class="contact-item">
+      🔗 LinkedIn
+    </a>
+    <a href="https://wa.me/923195106689" target="_blank" class="contact-item">
+      💬 WhatsApp
+    </a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <p>© 2026 <span>Syed Askar</span> — All Rights Reserved · Made with ❤️ in Pakistan</p>
+</footer>
+
+<script>
+  // Scroll reveal
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => entry.target.classList.add('visible'), i * 80);
+      }
+    });
+  }, { threshold: 0.1 });
+
+  reveals.forEach(el => observer.observe(el));
+
+  // Smooth nav scroll
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      e.preventDefault();
+      const target = document.querySelector(a.getAttribute('href'));
+      if (target) target.scrollIntoView({ behavior: 'smooth' });
+    });
+  });
+</script>
+</body>
+</html>
